@@ -176,7 +176,7 @@
 					</p>
 				{/if}
 				{#if r.deficit}
-					<p>Reaching 70% needs about <span class="num">{round(r.deficit.median)}</span> more sterilisations
+					<p>Reaching 70% needs about <span class="num">{round(r.deficit.median)}</span> more {round(r.deficit.median) === 1 ? 'sterilisation' : 'sterilisations'}
 						(<span class="num">{round(r.deficit.low)} to {round(r.deficit.high)}</span>).</p>
 				{/if}
 				{#each r.comparability_problems as problem (problem)}<p class="error">{problem}</p>{/each}

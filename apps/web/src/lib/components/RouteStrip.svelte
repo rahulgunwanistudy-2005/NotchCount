@@ -218,6 +218,7 @@
 		margin-top: var(--space-2);
 	}
 	.key {
+		white-space: nowrap;
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
@@ -225,6 +226,18 @@
 	.note {
 		color: var(--fog-text);
 		flex-basis: 100%;
+	}
+	/* The SVG scales down on phones; keep labels and dots readable at about 12 px and 4 px. */
+	@media (max-width: 600px) {
+		.lbl {
+			font-size: 22px;
+		}
+		.lbl.strong {
+			font-size: 24px;
+		}
+		.dot:not(.static) {
+			r: 9px;
+		}
 	}
 	@keyframes drop {
 		from {

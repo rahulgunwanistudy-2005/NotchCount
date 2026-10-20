@@ -49,9 +49,10 @@ def headline(results: dict[str, Any]) -> Headline:
         share_text = f"{_p(s['share'])} are sterilised ({_p(s['low'])} to {_p(s['high'])})."
     deficit_text = None
     if deficit:
+        k = round(deficit["median"])
+        noun = "sterilisation" if k == 1 else "sterilisations"
         deficit_text = (
-            f"Reaching 70% needs about {_n(deficit['median'])} more sterilisations "
-            f"({_n(deficit['low'])} to {_n(deficit['high'])})."
+            f"Reaching 70% needs about {k} more {noun} ({_n(deficit['low'])} to {_n(deficit['high'])})."
         )
     return Headline(population, share_text, deficit_text, note)
 
@@ -61,7 +62,8 @@ def method_lines(results: dict[str, Any], method: str) -> list[str]:
     passes = results.get("passes", [])
     if passes:
         days = ", ".join(datetime.fromisoformat(p["started_at"]).strftime("%d %b") for p in passes)
-        lines.append(f"The same route was walked {len(passes)} time(s) at the same morning hour ({days}).")
+        times = {1: "once", 2: "twice"}.get(len(passes), f"{len(passes)} times")
+        lines.append(f"The same route was walked {times} at the same morning hour ({days}).")
     lines.append(
         "Every free-roaming dog seen from the route was photographed. Software matched dogs across walks "
         "from their appearance, and team members checked every uncertain match and ear."
@@ -76,8 +78,10 @@ def method_lines(results: dict[str, Any], method: str) -> list[str]:
     ps = results.get("point_share") or (results.get("single_pass") or {}).get("share")
     if ps:
         lines.append(
-            f"Ear checked on {ps['with_visible_ear']} dogs, {ps['notched']} carried the sterilisation ear-notch; "
-            f"{ps['excluded_not_visible']} dogs whose ears could not be seen are left out of the share."
+            f"In the best-guess matching, {ps['notched']} of the {ps['with_visible_ear']} dogs whose ear could be "
+            f"seen carried the sterilisation ear-notch, and {ps['excluded_not_visible']} dogs with hidden ears are "
+            "left out of the share. The share above is the middle of the simulations, which also allow for ear "
+            "calls the software was unsure about."
         )
     return lines
 
