@@ -10,7 +10,14 @@ if TYPE_CHECKING:
 
 
 def available_handlers() -> dict[str, Handler]:
-    handlers: dict[str, Handler] = {}
+    from notchcount_worker import analysis
+
+    handlers: dict[str, Handler] = {
+        "match_survey": analysis.match_survey,
+        "notch_survey": analysis.notch_survey,
+        "train_models": analysis.train_models,
+        "estimate": analysis.estimate,
+    }
     try:
         from notchcount_worker.ingest import ingest_photo, models_ready
     except ImportError:

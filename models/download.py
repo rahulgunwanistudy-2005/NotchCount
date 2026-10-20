@@ -1,6 +1,6 @@
 """Download the worker's ONNX models and verify their SHA-256 (stdlib only).
 
-    python models/download.py models/cache detector.onnx dinov2_vits14_int8.onnx
+python models/download.py models/cache detector.onnx dinov2_vits14_int8.onnx
 """
 
 import hashlib

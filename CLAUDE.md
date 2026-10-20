@@ -10,3 +10,4 @@
 - UI follows the frontend-design skill and the design brief; review screenshots at 375 px and 1280 px before calling a screen done.
 - Update `PROGRESS.md` and `docs/AI_DISCLOSURE.md` at every gate.
 - Ask the team only for keys, field data, labels, consent questions and decisions marked HUMAN.
+- Commit messages and PR descriptions carry no AI attribution (no Co-Authored-By trailers, no "Generated with" lines). AI use is disclosed in `docs/AI_DISCLOSURE.md` only.

@@ -19,7 +19,7 @@ from notchcount_api import logs as nc_logging
 from notchcount_api.config import Settings, get_settings
 from notchcount_api.db.session import get_sessionmaker
 from notchcount_api.deps import csrf_guard
-from notchcount_api.routers import auth, ops, passes, setup
+from notchcount_api.routers import analysis, auth, cases, ops, passes, reports, setup
 
 log = logging.getLogger("notchcount.api")
 
@@ -107,9 +107,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return response
 
     api = APIRouter(prefix="/api/v1", dependencies=[Depends(csrf_guard)])
-    for r in (auth.router, setup.router, passes.router, ops.router):
+    for r in (
+        auth.router,
+        setup.router,
+        passes.router,
+        analysis.router,
+        cases.router,
+        reports.router,
+        ops.router,
+    ):
         api.include_router(r)
     app.include_router(api)
+    # Signed server-to-server calls: no cookie, so no CSRF header.
+    app.include_router(cases.webhooks, prefix="/api/v1")
 
     @app.get("/healthz", include_in_schema=False)
     async def healthz() -> dict[str, str]:

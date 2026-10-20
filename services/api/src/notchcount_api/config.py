@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -45,6 +45,18 @@ class Settings(BaseSettings):
 
     static_dir: Path | None = REPO_ROOT / "apps" / "web" / "build"
     run_worker_inprocess: bool = False
+
+    @field_validator(
+        "mojoauth_api_key",
+        "agentboxd_draft_key",
+        "agentboxd_send_key",
+        "agentboxd_webhook_secret",
+        mode="before",
+    )
+    @classmethod
+    def _blank_is_unset(cls, v: object) -> object:
+        # An empty env var must mean "not configured", never "an empty secret anyone can sign with".
+        return None if v in ("", None) else v
 
     @property
     def secure_cookies(self) -> bool:

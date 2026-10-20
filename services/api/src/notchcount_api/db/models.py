@@ -341,7 +341,23 @@ class Estimate(Base):
     code_version: Mapped[str] = mapped_column(String(80), nullable=False)
     seed: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued")
+    error: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = _created()
+
+
+class ModelVersion(Base):
+    """A fitted match or notch model for a team, stored as JSON coefficients (never pickled)."""
+
+    __tablename__ = "model_versions"
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    team_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("teams.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    kind: Mapped[str] = mapped_column(String(20), nullable=False)
+    version: Mapped[str] = mapped_column(String(80), nullable=False)
+    params: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
     created_at: Mapped[datetime] = _created()
 
 
