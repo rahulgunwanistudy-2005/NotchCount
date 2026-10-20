@@ -1,0 +1,6 @@
+# Which ear is notched and how, by city or operator (BIBLE 3.5). Reviewers can override per call.
+# Unknown until the team's ABC contact or a feeder confirms it; "either" accepts a notch on any ear.
+default:
+  ear: either
+  shape: v_notch
+  note: Set from the local ABC operator's practice once confirmed.

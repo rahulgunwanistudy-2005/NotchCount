@@ -155,9 +155,7 @@ async def load_route(db: AsyncSession, route_id: uuid.UUID) -> RouteOut | None:
 async def list_routes(team_id: uuid.UUID, user: UserDep, db: DbDep) -> list[RouteOut]:
     await require_role(db, user, team_id, Role.WALKER)
     rows = (
-        await db.execute(
-            _route_select().where(RouteRow.team_id == team_id).order_by(RouteRow.created_at)
-        )
+        await db.execute(_route_select().where(RouteRow.team_id == team_id).order_by(RouteRow.created_at))
     ).all()
     return [_route_out(r[0], r[1], r[2]) for r in rows]
 

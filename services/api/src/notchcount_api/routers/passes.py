@@ -20,7 +20,7 @@ from notchcount_api.db.models import PassRow, Photo, Role, RouteRow, Survey, Use
 from notchcount_api.deps import DbDep, SettingsDep, UserDep, require_role
 from notchcount_api.domain.integrity import PassWindow, PhotoRejected, check_photo, pass_start_flags
 from notchcount_api.routers.setup import pass_out, survey_team
-from notchcount_api.schemas import PassEnd, PassOut, PassStart, PhotoOut
+from notchcount_api.schemas import PassEnd, PassOut, PassStart, PhotoMeta, PhotoOut
 
 router = APIRouter(tags=["passes"])
 
@@ -103,6 +103,27 @@ async def get_pass(pass_id: uuid.UUID, user: UserDep, db: DbDep) -> PassOut:
     await require_role(db, user, route.team_id, Role.WALKER)
     name = (await db.execute(select(User.display_name).where(User.id == p.observer_id))).scalar_one()
     return pass_out(p, name, await _photo_count(db, p.id))
+
+
+@router.get("/passes/{pass_id}/photos", response_model=list[PhotoMeta])
+async def list_photos(pass_id: uuid.UUID, user: UserDep, db: DbDep) -> list[PhotoMeta]:
+    _, _, route = await _pass_with_team(db, pass_id)
+    await require_role(db, user, route.team_id, Role.WALKER)
+    photos = (
+        await db.execute(select(Photo).where(Photo.pass_id == pass_id).order_by(Photo.taken_at))
+    ).scalars()
+    return [
+        PhotoMeta(
+            id=p.id,
+            taken_at=p.taken_at,
+            shot=p.shot,
+            accuracy_m=p.accuracy_m,
+            has_location=p.geom is not None,
+            flags=list(p.flags),
+            status=p.status,
+        )
+        for p in photos
+    ]
 
 
 @router.post("/passes/{pass_id}/end", response_model=PassOut)

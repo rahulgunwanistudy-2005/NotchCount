@@ -6,6 +6,7 @@ from datetime import UTC, datetime, timedelta
 
 import httpx
 import pytest
+
 from notchcount_api.db.models import Role
 
 from .conftest import ROUTE, jpeg_bytes, make_member, sign_in
@@ -38,7 +39,9 @@ async def walker_pass(client: httpx.AsyncClient) -> dict[str, str]:
         )
     ).json()
     invite = (
-        await client.post(f"/api/v1/teams/{team_id}/members", json={"display_name": "Walker", "role": "walker"})
+        await client.post(
+            f"/api/v1/teams/{team_id}/members", json={"display_name": "Walker", "role": "walker"}
+        )
     ).json()
     client.cookies.clear()
     await sign_in(client, invite["invite_url"].split("#", 1)[1])
@@ -83,7 +86,9 @@ async def test_mutations_need_csrf_header(client: httpx.AsyncClient) -> None:
     assert r.status_code == 403
 
 
-async def test_other_team_cannot_see_or_upload(client: httpx.AsyncClient, walker_pass: dict[str, str]) -> None:
+async def test_other_team_cannot_see_or_upload(
+    client: httpx.AsyncClient, walker_pass: dict[str, str]
+) -> None:
     _, _, outsider = await make_member(None, "Outsider", Role.ADMIN)
     client.cookies.clear()
     await sign_in(client, outsider)
@@ -111,7 +116,9 @@ async def test_upload_is_idempotent_and_flags_location(
     again = await _upload(client, walker_pass["pass_id"], data, now, lat=28.6139, lon=77.2095, accuracy_m=6)
     assert again.json()["duplicate"] is True and again.json()["id"] == first.json()["id"]
 
-    far = await _upload(client, walker_pass["pass_id"], jpeg_bytes(3), now, lat=28.70, lon=77.30, accuracy_m=80)
+    far = await _upload(
+        client, walker_pass["pass_id"], jpeg_bytes(3), now, lat=28.70, lon=77.30, accuracy_m=80
+    )
     assert set(far.json()["flags"]) == {"poor_gps", "outside_corridor"}
     none = await _upload(client, walker_pass["pass_id"], jpeg_bytes(4), now)
     assert none.json()["flags"] == ["no_gps"]
@@ -120,7 +127,9 @@ async def test_upload_is_idempotent_and_flags_location(
     assert p["photo_count"] == 3
 
 
-async def test_upload_rejects_bad_bytes_and_times(client: httpx.AsyncClient, walker_pass: dict[str, str]) -> None:
+async def test_upload_rejects_bad_bytes_and_times(
+    client: httpx.AsyncClient, walker_pass: dict[str, str]
+) -> None:
     data = jpeg_bytes(5)
     form = {"sha256": "0" * 64, "taken_at": datetime.now(UTC).isoformat()}
     r = await client.post(
@@ -141,11 +150,15 @@ async def test_ended_pass_accepts_queued_photos_but_not_later_ones(
 ) -> None:
     taken = datetime.now(UTC) - timedelta(minutes=2)
     ended = datetime.now(UTC) - timedelta(minutes=1)
-    r = await client.post(f"/api/v1/passes/{walker_pass['pass_id']}/end", json={"ended_at": ended.isoformat()})
+    r = await client.post(
+        f"/api/v1/passes/{walker_pass['pass_id']}/end", json={"ended_at": ended.isoformat()}
+    )
     assert r.status_code == 200 and r.json()["locked"] is True
     ok = await _upload(client, walker_pass["pass_id"], jpeg_bytes(7), taken)
     assert ok.status_code == 200
-    late = await _upload(client, walker_pass["pass_id"], jpeg_bytes(8), datetime.now(UTC) + timedelta(minutes=4))
+    late = await _upload(
+        client, walker_pass["pass_id"], jpeg_bytes(8), datetime.now(UTC) + timedelta(minutes=4)
+    )
     assert late.status_code == 422
 
 

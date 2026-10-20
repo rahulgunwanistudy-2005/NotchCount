@@ -1,0 +1,15 @@
+# Tunable thresholds (BIBLE 5). Values are starting points to tune on pass-1 photos; changes are logged.
+detector:
+  dog_confidence: 0.35
+  person_confidence: 0.25
+  vehicle_confidence: 0.30
+  input_size: 640
+crops:
+  pad_fraction: 0.10
+  quality_floor: 0.35
+matching:
+  review_low: 0.2
+  review_high: 0.8
+  cluster_cut: 0.5
+notch:
+  review_below: 0.8

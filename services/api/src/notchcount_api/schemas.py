@@ -8,7 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from notchcount_api.db.models import Role, SurveyStatus
+from notchcount_api.db.models import PhotoStatus, Role, SurveyStatus, View
 
 Lon = Annotated[float, Field(ge=-180, le=180)]
 Lat = Annotated[float, Field(ge=-90, le=90)]
@@ -128,6 +128,16 @@ class PhotoOut(Out):
     sha256: str
     duplicate: bool
     flags: list[str]
+
+
+class PhotoMeta(Out):
+    id: uuid.UUID
+    taken_at: datetime
+    shot: View
+    accuracy_m: float | None
+    has_location: bool
+    flags: list[str]
+    status: PhotoStatus
 
 
 class HealthOut(Out):

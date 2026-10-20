@@ -17,13 +17,14 @@ os.environ["NC_STATIC_DIR"] = ""
 
 import httpx
 import pytest
+from PIL import Image
+from sqlalchemy import text
+
 from notchcount_api.auth.invites import create_invite
 from notchcount_api.config import get_settings
 from notchcount_api.db.models import Base, Role, Team, TeamMember, User
 from notchcount_api.db.session import get_engine, get_sessionmaker
 from notchcount_api.main import create_app
-from PIL import Image
-from sqlalchemy import text
 
 pytestmark = pytest.mark.db
 
