@@ -37,6 +37,7 @@ class Embedder:
         opts = ort.SessionOptions()
         opts.intra_op_num_threads = threads
         opts.inter_op_num_threads = 1
+        opts.enable_cpu_mem_arena = False
         self.session = ort.InferenceSession(str(model_path), opts, providers=["CPUExecutionProvider"])
         self.input_name = self.session.get_inputs()[0].name
         self.input_size = input_size
@@ -48,7 +49,7 @@ class Embedder:
         out = self.session.run(None, {self.input_name: tensor})[0]
         vec = np.asarray(out, dtype=np.float32).reshape(-1)
         norm = float(np.linalg.norm(vec))
-        return vec / norm if norm > 0 else vec
+        return (vec / norm).astype(np.float32) if norm > 0 else vec
 
 
 def color_histogram(crop_rgb: Image) -> Vector:

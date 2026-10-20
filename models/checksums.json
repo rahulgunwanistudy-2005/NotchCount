@@ -1,0 +1,8 @@
+{
+  "release": "https://github.com/rahulgunwanistudy-2005/NotchCount/releases/download/models-v1",
+  "files": {
+    "detector.onnx": "73708df9496a779b974eef787c04fee0479aabf005271a6a2541a33d640151f4",
+    "dinov2_vits14_int8.onnx": "d95cc864591c72f9b81489df52e2ebaaebbd64e7a47a005cc91820404e84d582",
+    "dinov2_vits14.onnx": "2747929dc8e59c953a2252aa7f0f33d4017a99f2f04bb83a1ff6a2466d967f7a"
+  }
+}

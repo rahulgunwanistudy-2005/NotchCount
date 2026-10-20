@@ -55,10 +55,10 @@ class Models:
         return f"{self.detector.version}+{self.embedder.version}"
 
     @staticmethod
-    def load(model_dir: Path, threads: int = 2) -> Models:
+    def load(model_dir: Path, embedder: str = "dinov2_vits14_int8", threads: int = 2) -> Models:
         return Models(
             Detector(model_dir / "detector.onnx", threads=threads),
-            Embedder(model_dir / "dinov2_vits14.onnx", threads=threads),
+            Embedder(model_dir / f"{embedder}.onnx", threads=threads),
         )
 
 

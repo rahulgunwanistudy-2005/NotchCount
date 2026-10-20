@@ -18,3 +18,4 @@ data/
 *.onnx
 .DS_Store
 .claude/
+private/

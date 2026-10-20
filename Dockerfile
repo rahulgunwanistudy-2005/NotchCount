@@ -22,6 +22,7 @@ COPY packages packages
 COPY services services
 COPY config config
 COPY models models
+RUN python models/download.py models/cache detector.onnx dinov2_vits14_int8.onnx
 RUN uv sync --frozen --no-dev --package notchcount-worker
 COPY --from=web /app/apps/web/build apps/web/build
 RUN useradd --create-home --uid 10001 app && chown -R app /app

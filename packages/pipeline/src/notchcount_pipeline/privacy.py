@@ -43,7 +43,9 @@ def redact(rgb: Image, boxes: list[Box]) -> tuple[Image, Mask, int, int]:
             continue
         region = out[y1:y2, x1:x2]
         # Pixelate, then blur: unreadable at any zoom and does not leave a sharp grid.
-        small = cv2.resize(region, (max(1, (x2 - x1) // 16), max(1, (y2 - y1) // 16)), interpolation=cv2.INTER_AREA)
+        small = cv2.resize(
+            region, (max(1, (x2 - x1) // 16), max(1, (y2 - y1) // 16)), interpolation=cv2.INTER_AREA
+        )
         coarse = cv2.resize(small, (x2 - x1, y2 - y1), interpolation=cv2.INTER_NEAREST)
         k = max(15, ((min(x2 - x1, y2 - y1) // 4) | 1))
         out[y1:y2, x1:x2] = cv2.GaussianBlur(coarse, (k, k), 0)

@@ -18,15 +18,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from notchcount_api import jobs
 from notchcount_api.db.session import get_sessionmaker
+from notchcount_worker.errors import PermanentJobError
 
 log = logging.getLogger("notchcount.worker")
 
 Handler = Callable[[AsyncSession, dict[str, Any]], Awaitable[None]]
 IDLE_SECONDS = 2.0
-
-
-class PermanentJobError(Exception):
-    """The job can never succeed (bad input); dead-letter it immediately."""
 
 
 def registry() -> dict[str, Handler]:

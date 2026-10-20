@@ -83,6 +83,7 @@ class Detector:
         opts = ort.SessionOptions()
         opts.intra_op_num_threads = threads
         opts.inter_op_num_threads = 1
+        opts.enable_cpu_mem_arena = False
         self.session = ort.InferenceSession(str(model_path), opts, providers=["CPUExecutionProvider"])
         self.input_name = self.session.get_inputs()[0].name
         self.input_size = input_size
@@ -113,5 +114,7 @@ class Detector:
             kept = cv2.dnn.NMSBoxes(rects, conf[idx].tolist(), 0.0, th.nms_iou)
             for k in np.array(kept).reshape(-1):
                 i = idx[int(k)]
-                boxes.append(Box(int(c), float(conf[i]), float(x1[i]), float(y1[i]), float(x2[i]), float(y2[i])))
+                boxes.append(
+                    Box(int(c), float(conf[i]), float(x1[i]), float(y1[i]), float(x2[i]), float(y2[i]))
+                )
         return sorted(boxes, key=lambda b: -b.conf)
