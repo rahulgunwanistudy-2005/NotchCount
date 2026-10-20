@@ -16,9 +16,10 @@ from notchcount_api.db.session import get_sessionmaker  # noqa: E402
 
 
 async def main() -> None:
-    assert get_settings().db_schema.endswith("_test")
+    schema = get_settings().db_schema
+    assert schema.endswith("_test") or os.environ.get("E2E_LIVE") == "1", schema
     async with get_sessionmaker()() as db:
-        team = Team(name="E2E team", city="Test city")
+        team = Team(name="E2E check (synthetic, delete me)", city="Test city")
         walker = User(auth_subject=f"e2e:{uuid.uuid4()}", display_name="E2E walker")
         db.add_all([team, walker])
         await db.flush()

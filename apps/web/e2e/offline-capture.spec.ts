@@ -4,7 +4,11 @@ import { expect, test } from '@playwright/test';
 /** G1: three photos captured offline all arrive with their metadata after reconnecting. */
 test('offline capture uploads after reconnect', async ({ page, context, request }) => {
 	const seed = JSON.parse(
-		execFileSync('uv', ['run', 'python', 'apps/web/e2e/seed.py'], { cwd: '../..', encoding: 'utf8' })
+		execFileSync('uv', ['run', 'python', 'apps/web/e2e/seed.py'], {
+			cwd: '../..',
+			encoding: 'utf8',
+			env: { ...process.env, NC_DB_SCHEMA: process.env.E2E_SCHEMA ?? 'notchcount_test' }
+		})
 	) as { invite: string; survey_id: string };
 
 	await page.goto(`/join#${seed.invite}`);

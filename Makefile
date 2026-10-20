@@ -14,7 +14,10 @@ test-db:
 	uv run pytest -q -m "db"
 
 check-web:
-	cd apps/web && pnpm run lint && pnpm run check && pnpm run test:unit -- --run && pnpm run build && pnpm run test:e2e
+	cd apps/web && pnpm run lint && pnpm run check && pnpm exec vitest --run && pnpm run build
+
+test-e2e:
+	cd apps/web && pnpm exec playwright test
 
 migrate:
 	cd services/api && uv run alembic upgrade head

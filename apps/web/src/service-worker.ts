@@ -37,8 +37,10 @@ sw.addEventListener('fetch', (event) => {
 	if (req.method !== 'GET' || url.origin !== sw.location.origin || url.pathname.startsWith('/api/')) return;
 
 	if (req.mode === 'navigate') {
+		// Shell first: every route renders from the same 200.html, and a sleeping host or no signal
+		// must never stand between a walker and the shutter. A new deploy installs a new cache.
 		event.respondWith(
-			fetch(req).catch(async () => (await caches.match('/200.html')) ?? Response.error())
+			caches.match('/200.html').then((hit) => hit ?? fetch(req).catch(() => Response.error()))
 		);
 		return;
 	}

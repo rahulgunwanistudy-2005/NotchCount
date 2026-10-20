@@ -1,0 +1,33 @@
+# AI disclosure
+
+Neighborhood Hacks allows AI assistants and requires disclosure. This file is kept current at every phase gate.
+
+## Tools
+
+| Tool | Used for |
+|---|---|
+| Claude Code (Anthropic, model Claude Opus 5.5) | Wrote most of the code, tests and docs in this repo, ran the test suites, set up the Supabase project and the interim Render deployment through connected accounts, and reviewed its own diffs. |
+| Anthropic `frontend-design` skill | Design process guidance (plan, critique against generic defaults, build, critique by screenshot). |
+
+## What the AI generated (so far)
+
+- Estimator library `packages/notchcount_stats` and its tests.
+- API (`services/api`), database migration, job queue, invite sign-in, pass-integrity rules and their tests.
+- Worker runner skeleton (`services/worker`).
+- Web app (`apps/web`): capture screen, offline queue, team admin, route drawing, service worker, Playwright test.
+- Docs: `docs/DECISIONS.md`, this file, `docs/LIMITATIONS.md`, `PROGRESS.md`.
+- Draft Hindi strings (not yet checked; hidden in the app until a team member reviews them).
+
+## What the team did
+
+The students wrote the build pack this work follows (the spec in `docs/BIBLE.md`, the design brief, the field protocol and the submission kit). They chose the problem and the method. They make the decisions marked HUMAN and collect all field data and labels.
+
+To be filled in by the team as it happens:
+
+- Field passes walked (who, when):
+- Photos taken:
+- Pair and ear labels made (who, how many):
+- Interviews and household survey:
+- Hindi strings checked by:
+- Code the team wrote or changed by hand:
+- What the team verified (for example, read the estimator and checked it against the worked example by hand):
