@@ -55,6 +55,8 @@ known-first-party = ["notchcount_stats", "notchcount_pipeline", "notchcount_api"
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S", "B"]
 "sim/**" = ["S311"]
+# Standalone Kaggle notebook script: installs its own deps at the top, then imports.
+"benchmarks/**" = ["E402", "S", "B905", "RUF046"]
 
 [tool.mypy]
 python_version = "3.12"

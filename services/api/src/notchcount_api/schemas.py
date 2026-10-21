@@ -111,6 +111,7 @@ class SurveyOut(Out):
     timezone: str
     route: RouteOut
     passes: list[PassOut]
+    public_slug: str | None = None
 
 
 class PassStart(BaseModel):

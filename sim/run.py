@@ -39,7 +39,7 @@ def one(args: tuple[Scenario, int, int]) -> Rep:
     sc, seed, bootstrap = args
     rng = np.random.default_rng([seed, int.from_bytes(sc.id.encode(), "big")])
     data, truth = simulate(sc, rng)
-    est = estimate_two_pass(data, replicates=bootstrap, seed=seed)
+    est = estimate_two_pass(data, replicates=bootstrap, seed=seed, matching=sc.matching)  # type: ignore[arg-type]
     trues = [p for p in data.pairs if p.a[1:] == p.b[1:]]
     split = sum(p.resolved_p <= 0.5 for p in trues) / len(trues) if trues else None
     seen2 = {s.id for s in data.sightings if s.pass_no == 2}

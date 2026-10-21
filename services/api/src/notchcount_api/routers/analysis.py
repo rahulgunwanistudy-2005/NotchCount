@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 import uuid
 from datetime import UTC, datetime
 from typing import Annotated, Any, Literal
@@ -248,6 +249,21 @@ async def find_matches(survey_id: uuid.UUID, user: UserDep, db: DbDep) -> dict[s
     await jobs.enqueue(db, "match_survey", {"survey_id": str(survey_id)}, dedupe_key=None)
     await db.commit()
     return {"status": "queued"}
+
+
+class PublishOut(BaseModel):
+    slug: str
+    url: str
+
+
+@router.post("/surveys/{survey_id}/publish", response_model=PublishOut)
+async def publish_report(survey_id: uuid.UUID, user: UserDep, db: DbDep, settings: SettingsDep) -> PublishOut:
+    """Give the survey a public report address (route-level numbers only). Idempotent."""
+    survey, _ = await _survey_for(db, user, survey_id, Role.ADMIN)
+    if survey.public_slug is None:
+        survey.public_slug = secrets.token_urlsafe(9)
+        await db.commit()
+    return PublishOut(slug=survey.public_slug, url=f"{settings.public_base_url}/r/{survey.public_slug}")
 
 
 @router.post("/surveys/{survey_id}/train", status_code=status.HTTP_202_ACCEPTED)

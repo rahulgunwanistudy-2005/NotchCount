@@ -50,6 +50,7 @@ export interface Survey {
 	timezone: string;
 	route: Route;
 	passes: Pass[];
+	public_slug: string | null;
 }
 
 export interface Member {

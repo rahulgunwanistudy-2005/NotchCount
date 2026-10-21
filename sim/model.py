@@ -36,6 +36,7 @@ class Scenario:
     notch_prevalence: float = 0.55
     ear_hidden: float = 0.2
     decoys: int = 3
+    matching: str = "assignment"
     note: str = ""
 
 
@@ -46,6 +47,12 @@ SCENARIOS = (
     Scenario("S4", 60, 0.6, false_merge=0.05, note="5% false merges, modelled: coverage at least 0.93"),
     Scenario("S5", 15, 0.5, note="small population: wide intervals, m2 = 0 rate reported"),
     Scenario("S6", 60, 0.6, false_split=0.05, modelled=False, note="5% false splits, hard decisions"),
+    Scenario(
+        "S3p", 60, 0.6, false_split=0.05, matching="pairwise", note="S3 with the BIBLE pairwise sampler"
+    ),
+    Scenario(
+        "S4p", 60, 0.6, false_merge=0.05, matching="pairwise", note="S4 with the BIBLE pairwise sampler"
+    ),
 )
 
 

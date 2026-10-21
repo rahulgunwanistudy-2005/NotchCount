@@ -228,6 +228,7 @@ async def survey_out(db: AsyncSession, survey: Survey, team_id: uuid.UUID) -> Su
         timezone=survey.timezone,
         route=route,
         passes=await pass_outs(db, survey.id),
+        public_slug=survey.public_slug,
     )
 
 

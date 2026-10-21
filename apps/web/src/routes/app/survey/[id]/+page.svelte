@@ -78,6 +78,17 @@
 		}
 	}
 
+	async function publish() {
+		notice = null;
+		try {
+			const out = await api.post<{ slug: string; url: string }>(`/surveys/${id}/publish`);
+			if (survey) survey.public_slug = out.slug;
+			notice = 'Report published. Anyone with the link can read it; it shows route-level numbers only.';
+		} catch (e) {
+			notice = (e as Error).message;
+		}
+	}
+
 	const latest = $derived(estimates.find((e) => e.status === 'done') ?? null);
 	const pending = $derived(estimates.find((e) => e.status === 'queued' || e.status === 'running') ?? null);
 	const round = (v: number | null | undefined) => (v === null || v === undefined ? '?' : Math.round(v));
@@ -144,9 +155,11 @@
 				<button class="btn quiet" onclick={() => act('match', 'Finding matches. This takes a minute.')}>Find matches</button>
 				<button class="btn quiet" onclick={() => act('train', 'Training on your labels, then rescoring.')}>Train on labels</button>
 				<button class="btn quiet" onclick={() => act('estimates', 'Estimate queued.')}>Run estimate</button>
+				<button class="btn quiet" disabled={!latest} onclick={publish}>Publish report</button>
 			</div>
 		{/if}
 		{#if notice}<p role="status">{notice}</p>{/if}
+		{#if survey.public_slug}<p><a href="/r/{survey.public_slug}">Open the public report</a></p>{/if}
 		{#if pending}<p class="meta">An estimate is {pending.status}.</p>{/if}
 		{#if latest?.results}
 			{@const r = latest.results}

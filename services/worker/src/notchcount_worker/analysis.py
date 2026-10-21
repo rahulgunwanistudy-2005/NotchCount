@@ -473,6 +473,7 @@ def _two_pass_json(e: Any) -> dict[str, Any]:
         "deficit": _summary(e.deficit),
         "point_share": _share_json(e.point_share),
         "replicates": e.replicates,
+        "matching": e.matching,
         "no_recapture_fraction": e.no_recapture_fraction,
         "no_visible_ear_fraction": e.no_visible_ear_fraction,
         "target_share": e.target_share,

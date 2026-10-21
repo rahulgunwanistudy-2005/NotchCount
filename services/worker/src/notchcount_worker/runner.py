@@ -59,10 +59,7 @@ async def run_once(worker_id: str, handlers: dict[str, Handler]) -> bool:
     return True
 
 
-async def run_forever(stop: asyncio.Event | None) -> None:
-    worker_id = f"{socket.gethostname()}:{os.getpid()}"
-    handlers = registry()
-    log.info("worker ready", extra={"worker_id": worker_id, "kinds": sorted(handlers)})
+async def _loop(worker_id: str, handlers: dict[str, Handler], stop: asyncio.Event | None) -> None:
     while stop is None or not stop.is_set():
         try:
             busy = await run_once(worker_id, handlers)
@@ -71,6 +68,16 @@ async def run_forever(stop: asyncio.Event | None) -> None:
             busy = False
         if not busy:
             await asyncio.sleep(IDLE_SECONDS)
+
+
+async def run_forever(stop: asyncio.Event | None, concurrency: int | None = None) -> None:
+    """Run `concurrency` job loops in one process. They share the loaded models; each job's
+    database waits overlap with other jobs' work, so throughput scales with round-trip latency."""
+    n = max(1, concurrency or int(os.environ.get("NC_WORKER_CONCURRENCY", "4")))
+    base = f"{socket.gethostname()}:{os.getpid()}"
+    handlers = registry()
+    log.info("worker ready", extra={"worker_id": base, "kinds": sorted(handlers), "concurrency": n})
+    await asyncio.gather(*(_loop(f"{base}/{i}", handlers, stop) for i in range(n)))
 
 
 def main() -> None:

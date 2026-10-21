@@ -1,8 +1,13 @@
 """Carry match and notch uncertainty into the population, share and deficit (BIBLE 3.4).
 
-Each replicate samples a match configuration from the calibrated pair probabilities, repairs it
-to a valid partition, samples notch status per individual, then draws N* from the Chao
-log-normal for that configuration and s* from a Jeffreys Beta. Reviewer decisions are fixed.
+Each replicate samples a match configuration, samples notch status per individual, then draws N*
+from the Chao log-normal for that configuration and s* from a Jeffreys Beta. Reviewer decisions
+are fixed.
+
+Two ways to sample the match configuration:
+- "assignment" (default): each walk-2 dog picks one walk-1 candidate or none (assignment.py).
+- "pairwise": the BIBLE 3.4 recipe, independent pair draws then greedy one-to-one repair. Kept
+  for comparison; the simulation shows it under-covers when matching is uncertain.
 """
 
 from __future__ import annotations
@@ -10,10 +15,12 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import Literal
 
 import numpy as np
 import numpy.typing as npt
 
+from notchcount_stats.assignment import AssignmentModel, merge
 from notchcount_stats.closed import EstimateStatus, PopulationEstimate, chao_lognormal_sigma, chapman
 from notchcount_stats.partition import Link, build_partition
 from notchcount_stats.proportion import COVERAGE_BENCHMARK, ShareEstimate, sterilised_share
@@ -24,6 +31,9 @@ FloatArray = npt.NDArray[np.float64]
 DEFAULT_REPLICATES = 2000
 # Above this fraction of replicates with no recaptures, no population range is reported.
 MAX_NO_RECAPTURE_FRACTION = 0.5
+
+
+Matching = Literal["assignment", "pairwise"]
 
 
 class EstimateMode(StrEnum):
@@ -63,6 +73,7 @@ class TwoPassEstimate:
     replicates: int
     seed: int
     target_share: float
+    matching: Matching
     point_counts: Counts
     point_population: PopulationEstimate
     point_share: ShareEstimate
@@ -174,6 +185,7 @@ def estimate_two_pass(
     replicates: int = DEFAULT_REPLICATES,
     seed: int = 0,
     target_share: float = COVERAGE_BENCHMARK,
+    matching: Matching = "assignment",
 ) -> TwoPassEstimate:
     if len(data.pass_numbers) != 2:
         raise ValueError(f"two-pass estimate needs exactly two passes, got {data.pass_numbers}")
@@ -193,9 +205,15 @@ def estimate_two_pass(
     s_star = np.full(replicates, np.nan)
     no_recap = 0
     no_visible = 0
+    model = AssignmentModel(prep.pass_of, prep.pairs, p1, p2) if matching == "assignment" else None
     for b in range(replicates):
-        same_mask = rng.random(prep.p.size) < prep.p
-        clusters = prep.partition(same_mask)
+        if model is not None:
+            one, two = model.within_partition(rng.random(model.within_p.size) < model.within_p)
+            cands = model.candidates(one, two)
+            q = model.recapture_rate(len(one), len(two), cands)
+            clusters = merge(one, two, model.sample_matches(cands, q, rng))
+        else:
+            clusters = prep.partition(rng.random(prep.p.size) < prep.p)
         counts = _counts(clusters, prep.pass_of, p1, p2)
 
         u = rng.random(len(prep.sighting_ids))
@@ -229,6 +247,7 @@ def estimate_two_pass(
         replicates=replicates,
         seed=seed,
         target_share=target_share,
+        matching=matching,
         point_counts=point_counts,
         point_population=point_pop,
         point_share=point_share,
