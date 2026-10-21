@@ -2,6 +2,15 @@
 
 Read this first. Newest phase at the top.
 
+## Status check (Oct 21, 19:30 IST)
+
+- **Field pass 1 has not happened in the app.** Production has the team and admin only: no route, survey or photos, and the admin sign-in link (valid to Oct 27) is unused. HUMAN: draw the route, create the survey, invite walkers, then walk.
+- **History cleaned and pushed:** all commits on GitHub are free of AI attribution (force-pushed with the team's approval). Render redeployed the latest code, verified live.
+- **Engine verified on real photos:** `docs/ENGINE_CHECK.md` (real photos, real models; pass 2 synthetic). Counts exactly match truth; the range covers the true N.
+- **Live:** offline-capture Playwright passes against https://notchcount.onrender.com, and the production worker ingested the uploads.
+- **CI:** fixed. The unit job lacked env config, and gitleaks failed on the root commit; it now scans full history with the CLI. A local check found no secrets in history.
+- **Speed:** about 150 ms per DB round trip from the laptop to Supabase Mumbai dominates ingest (3.5 s wall, 1 s compute). Blob writes are now batched. The worker should be hosted in the database's region.
+
 ## P4 Re-ID, calibration, notch, review queue: code done, waiting for labels (Oct 21, 01:15 IST)
 
 - Candidate pairs, match features, logistic match model with held-out AUC and reliability, within-pass clustering plus Hungarian assignment, 3-way ear classifier, review queue, and labelling screens (pairs and ears, keyboard S/D/N and N/O/V).
@@ -18,7 +27,6 @@ Read this first. Newest phase at the top.
 - YOLO11s detection, blur of people and vehicles with a re-detection check, crops with quality scores, DINOv2 int8 embeddings. The worker job is tested end to end against the test database.
 - Spike on 17 sample photos: p50 736 ms, p95 1.1 s, peak 313 MB (DECISIONS D-14).
 - A worker runs on the team laptop against production (`uv run nc-worker`), so pass-1 photos are processed as they arrive.
-- **Push pending:** commit history was rewritten locally to remove AI attribution trailers. Someone must run `git push --force-with-lease origin main` and `git push --force origin models-v1` (the auto-mode guard blocked me from doing it).
 
 ## P1 Field capture PWA: G1 passed (Oct 20, 22:40 IST)
 

@@ -72,11 +72,11 @@ async def ingest_photo(db: AsyncSession, payload: dict[str, Any]) -> None:
         return
 
     blurred_key = f"blurred/{photo_id}.jpg"
-    await store.put(Bucket.BLURRED, blurred_key, result.blurred_jpeg, "image/jpeg")
+    objects = [(Bucket.BLURRED, blurred_key, result.blurred_jpeg, "image/jpeg")]
     await db.execute(delete(Detection).where(Detection.photo_id == photo_id))
     for i, dog in enumerate(result.dogs):
         crop_key = f"crops/{photo_id}_{i}.jpg"
-        await store.put(Bucket.CROPS, crop_key, dog.jpeg, "image/jpeg")
+        objects.append((Bucket.CROPS, crop_key, dog.jpeg, "image/jpeg"))
         db.add(
             Detection(
                 photo_id=photo_id,
@@ -91,6 +91,7 @@ async def ingest_photo(db: AsyncSession, payload: dict[str, Any]) -> None:
                 model_version=m.version,
             )
         )
+    await store.put_many(objects)
     photo.storage_key = blurred_key
     photo.width, photo.height = result.width, result.height
     photo.persons_blurred = result.persons_blurred

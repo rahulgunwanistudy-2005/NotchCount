@@ -6,6 +6,11 @@ on:
 jobs:
   python:
     runs-on: ubuntu-latest
+    env:
+      # Placeholder config so the app can be imported; database tests are deselected in CI.
+      NC_DATABASE_URL: postgresql+asyncpg://ci:ci@localhost:5432/ci
+      NC_SESSION_SECRET: ci-only-not-a-secret
+      NC_BLOB_SIGNING_SECRET: ci-only-not-a-secret
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -45,6 +50,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Full-history scan with the CLI (the action's commit-range mode fails on a root commit).
+      - name: gitleaks (full history)
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz | tar -xz gitleaks
+          ./gitleaks git --redact -v --exit-code 1 .

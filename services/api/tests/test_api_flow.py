@@ -55,7 +55,17 @@ async def walker_pass(client: httpx.AsyncClient) -> dict[str, str]:
 
 async def test_every_api_route_needs_a_session(client: httpx.AsyncClient) -> None:
     app_routes = client._transport.app.openapi()["paths"]  # type: ignore[attr-defined]
-    open_paths = {"/api/v1/auth/invite", "/api/v1/auth/logout", "/api/v1/blobs/{key}"}
+    # Public by design: sign-in, signed image links, the public report, and the signed webhook.
+    open_paths = {
+        "/api/v1/auth/invite",
+        "/api/v1/auth/logout",
+        "/api/v1/blobs/{key}",
+        "/api/v1/reports/{slug}",
+        "/api/v1/reports/{slug}.pdf",
+        "/api/v1/webhooks/agentboxd",
+    }
+    assert (await client.get("/api/v1/reports/nope")).status_code == 404
+    assert (await client.post("/api/v1/webhooks/agentboxd", content=b"{}")).status_code in (401, 503)
     for path, methods in app_routes.items():
         if path in open_paths:
             continue

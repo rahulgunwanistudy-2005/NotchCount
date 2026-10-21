@@ -45,6 +45,18 @@ class PostgresBlobStore:
         )
         await self._db.execute(stmt.on_conflict_do_nothing(index_elements=[Blob.key]))
 
+    async def put_many(self, items: list[tuple[Bucket, str, bytes, str]]) -> None:
+        """One round trip for several objects (a photo and its crops)."""
+        if not items:
+            return
+        stmt = insert(Blob).values(
+            [
+                {"key": k, "bucket": b.value, "content_type": ct, "data": d, "size": len(d)}
+                for b, k, d, ct in items
+            ]
+        )
+        await self._db.execute(stmt.on_conflict_do_nothing(index_elements=[Blob.key]))
+
     async def get(self, key: str) -> tuple[Bucket, str, bytes] | None:
         row = (
             await self._db.execute(select(Blob.bucket, Blob.content_type, Blob.data).where(Blob.key == key))
