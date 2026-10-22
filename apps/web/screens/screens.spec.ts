@@ -32,6 +32,8 @@ async function shot(page: Page, name: string, size: string, path: string, waitFo
 	await page.goto(path);
 	if (waitFor)
 		await page.getByText(waitFor, { exact: false }).filter({ visible: true }).first().waitFor({ timeout: 60_000 });
+	// Full-page shots include what is below the fold, so load lazy images now.
+	await page.evaluate(() => document.querySelectorAll('img[loading="lazy"]').forEach((i) => ((i as HTMLImageElement).loading = 'eager')));
 	// Photos come through signed links from the database; wait until every image has loaded.
 	await page.waitForFunction(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0), null, {
 		timeout: 60_000
@@ -58,6 +60,11 @@ for (const size of sizes) {
 		await shot(page, 'landing', s, '/', 'Count the dogs');
 		if (process.env.SCREENS_SLUG) await shot(page, 'report', s, `/r/${process.env.SCREENS_SLUG}`, 'dogs use this route');
 		await shot(page, 'signed-out', s, '/app', 'Sign in with your team link');
+		const signedIn = ['home', 'survey', 'label-pairs', 'label-ears', 'review', 'case', 'team', 'field-card', 'health', 'capture'];
+		if (!signedIn.some(wanted)) {
+			writeFileSync(`${out}/audit-${s}.json`, JSON.stringify(audit, null, 1));
+			return; // sign-in codes are one-use: do not spend one for public screens only
+		}
 		await page.goto(`/join#${env(s === '375' ? 'SCREENS_INVITE_A' : 'SCREENS_INVITE_B')}`);
 		await page.waitForURL('**/app');
 		await shot(page, 'home', s, '/app', 'Hello');

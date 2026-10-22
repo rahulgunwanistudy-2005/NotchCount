@@ -106,8 +106,8 @@
 					range.
 				</p>
 				<div class="cta">
-					<a class="btn peach big" href="#try"><Icon name="survey" size={20} />Try it on a street</a>
-					<a class="btn quiet big" href={sampleHref}>Read a sample report</a>
+					<a class="btn peach btn-lg" href="#try"><Icon name="survey" size={20} />Try it on a street</a>
+					<a class="btn quiet btn-lg" href={sampleHref}>Read a sample report</a>
 				</div>
 				<ul class="proof">
 					<li><strong class="num">0.988</strong><span>AUC telling same dog from different dogs, 191 real dogs</span></li>
@@ -480,7 +480,7 @@
 		gap: var(--space-3);
 		margin-top: var(--space-5);
 	}
-	.btn.big {
+	.btn-lg {
 		min-height: 54px;
 		padding: 0 var(--space-6);
 		font-size: 1.05rem;
