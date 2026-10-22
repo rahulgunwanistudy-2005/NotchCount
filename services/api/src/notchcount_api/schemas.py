@@ -143,7 +143,18 @@ class PhotoMeta(Out):
     status: PhotoStatus
 
 
+class IntegrationOut(BaseModel):
+    """One outside service. status: ok, missing (no key here), invalid (key refused),
+    no_permission (key lacks a scope we need) or unreachable."""
+
+    name: str
+    status: Literal["ok", "missing", "invalid", "no_permission", "unreachable"]
+    detail: str
+
+
 class HealthOut(Out):
+    integrations: list[IntegrationOut] = []
+    public_base_url: str = ""
     queue: dict[str, int]
     dead_jobs: list[dict[str, str | int | None]]
     photos: dict[str, int]

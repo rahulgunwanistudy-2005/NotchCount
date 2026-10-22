@@ -293,6 +293,9 @@ async def approve_and_send(
     return await _case_out(db, settings, case, survey)
 
 
+MAIL_EVENTS = ("message.received", "message.enriched", "message.released")
+
+
 @webhooks.post("/webhooks/agentboxd", status_code=status.HTTP_204_NO_CONTENT)
 async def agentboxd_webhook(request: Request, db: DbDep, settings: SettingsDep) -> None:
     """Replies are stored as untrusted text for people to read. Nothing parses or acts on them."""
@@ -312,9 +315,14 @@ async def agentboxd_webhook(request: Request, db: DbDep, settings: SettingsDep) 
         event = json.loads(raw)
     except ValueError as exc:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Body is not JSON.") from exc
-    if event.get("type") != "message.received":
+    # Screening workspaces send message.received without content first; the content arrives in
+    # message.enriched (screened) or message.released (a person released held mail). Store each
+    # message once, from the first event that carries its content.
+    if event.get("type") not in MAIL_EVENTS:
         return
     data = event.get("data") or {}
+    if (data.get("message") or {}).get("withheld"):
+        return
     inbox_id = str((data.get("inbox") or {}).get("id") or data.get("inbox_id") or "")
     case = (await db.execute(select(Case).where(Case.agentboxd_inbox_id == inbox_id))).scalar_one_or_none()
     if case is None:

@@ -3,7 +3,14 @@
 	import { onMount } from 'svelte';
 	import { api } from '$lib/api';
 
+	interface Integration {
+		name: string;
+		status: 'ok' | 'missing' | 'invalid' | 'no_permission' | 'unreachable';
+		detail: string;
+	}
 	interface Health {
+		integrations: Integration[];
+		public_base_url: string;
 		queue: Record<string, number>;
 		dead_jobs: { id: number; kind: string; attempts: number; error: string }[];
 		photos: Record<string, number>;
@@ -46,6 +53,24 @@
 
 {#if health}
 	<div class="grid">
+		<section class="panel wide">
+			<div class="panel-head">
+				<h2>Connections</h2>
+				<span class="hint">This server: {health.public_base_url}</span>
+			</div>
+			<ul class="conns">
+				{#each health.integrations as c (c.name)}
+					<li>
+						<span class="chip" class:done={c.status === 'ok'} class:warn={c.status !== 'ok'}>
+							{{ ok: 'Working', missing: 'Not set', invalid: 'Key refused', no_permission: 'Missing permission', unreachable: 'No answer' }[c.status]}
+						</span>
+						<strong>{c.name}</strong>
+						<span class="hint">{c.detail}</span>
+					</li>
+				{/each}
+			</ul>
+		</section>
+
 		<section class="panel">
 			<div class="panel-head">
 				<h2>Job queue</h2>
@@ -141,6 +166,26 @@
 			padding: var(--space-2) var(--space-1);
 			font-size: 0.88rem;
 		}
+	}
+	.conns {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: var(--space-2);
+	}
+	.conns li {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--space-1) var(--space-3);
+		background: var(--surface-soft);
+		border-radius: var(--radius-tile);
+		padding: var(--space-3) var(--space-4);
+	}
+	.conns .chip {
+		min-width: 8.5rem;
+		justify-content: center;
 	}
 	table {
 		width: 100%;
