@@ -11,7 +11,8 @@ Read this first. Newest phase at the top.
   - A strip of real crops.
 - **Dashboard:** a gallery of every dog the estimate found (`GET /surveys/{id}/dogs`, team-only), filterable, with notch-cut tiles for person-confirmed notches. The sterilised share sits on a dial against the 70% target, also on the public report.
 - **MojoAuth (D-28):** email one-time codes beside invite links, checked against MojoAuth's OpenAPI spec. Only a keyed hash of the address is stored. The key is set on the team's Deployxa project, not yet on Render.
-- **Screens:** `docs/screens/` was re-captured from the live site: 26 files, 12 screens at each width. One overflow, the health page at 375 px, is fixed; the re-capture is pending.
+- **Screens:** `docs/screens/` was re-captured from the live site: 26 files, 12 screens at each width. All 24 screenshots pass: no sideways scroll and no serious or critical axe findings.
+- **Hosted worker verified:** an estimate queued on the live demo finished in 24 s on Render alone, with the same numbers, and recorded the deployed commit.
 - **Tests:** 5 interface tests (with the dashboard gallery and the simulator), 8 web unit tests and 46 Python tests pass. API unit tests no longer wipe the test schema.
 - **HUMAN:**
   - Agentboxd keys and webhook (steps in the private demo pack).
