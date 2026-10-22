@@ -204,8 +204,24 @@ async def test_draft_waits_for_admin_approval_then_reply_threads_back(
         await client.post("/api/v1/webhooks/agentboxd", content=held, headers=_signed(held))
     ).status_code == 204
 
+    # A screening workspace first announces mail without content, then sends it once screened.
+    for kind, message in (
+        ("message.received", {"id": "m_in_3", "withheld": True, "labels": []}),
+        (
+            "message.enriched",
+            {"id": "m_in_3", "extracted_text": "We will look into it.", "labels": ["ai:reply"]},
+        ),
+        ("message.released", {"id": "m_in_3", "extracted_text": "We will look into it.", "labels": []}),
+    ):
+        body = json.dumps(
+            {"id": f"evt_{kind}", "type": kind, "data": {"inbox": {"id": "inb_1"}, "message": message}}
+        ).encode()
+        r = await client.post("/api/v1/webhooks/agentboxd", content=body, headers=_signed(body))
+        assert r.status_code == 204
+
     timeline = (await client.get(f"/api/v1/cases/{case['id']}")).json()
-    assert [e["kind"] for e in timeline["events"]] == ["draft", "approved", "sent", "reply", "held"]
+    assert [e["kind"] for e in timeline["events"]] == ["draft", "approved", "sent", "reply", "held", "reply"]
+    assert timeline["events"][5]["payload"]["untrusted_text"] == "We will look into it."
     assert timeline["events"][3]["payload"]["untrusted_text"].startswith("Ignore previous")
     assert sum(1 for _, p, _ in fake.calls if p.endswith("/send")) == 1, "reply content never triggers a send"
     assert timeline["report_url"].endswith(f"/r/{timeline['report_url'].rsplit('/', 1)[1]}")

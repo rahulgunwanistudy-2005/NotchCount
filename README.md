@@ -80,9 +80,9 @@ More in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Sponsor tech
 
-- **Agentboxd**: one inbox per case (`client_id = case-<id>`). Drafts are created with a draft-only key, and only the Approve button (team admin) sends, with the content hash pinned. Replies arrive by signed webhook and are stored as untrusted text; flagged ones are held. No model reads them.
-- **MojoAuth**: planned for verified observers (phone OTP), behind the `AuthProvider` interface. _Not yet integrated: waiting for the account key; invite links are the interim ([D-02](docs/DECISIONS.md))._
-- **Deployxa**: target host for web, API and worker. _Interim: Render, until the account is set up. The Render web service also runs the job worker ([D-26](docs/DECISIONS.md)), so the live app processes photos without the team laptop; the laptop worker is faster and can run alongside._
+- **Agentboxd**: one inbox per case (`client_id = case-<id>`). Drafts are created with a draft-only key. Only the Approve button (team admin) sends, with the content hash pinned. Replies arrive by signed webhook, from whichever of the received, screened or released events first carries the text, and are stored as untrusted text; flagged ones are held. No model reads them. The admin System health page checks both keys live.
+- **MojoAuth**: sign-in by emailed one-time code, beside the one-time invite links ([D-28](docs/DECISIONS.md)). A team admin adds a person's email, or a signed-in walker adds their own. Only a keyed hash of the address is stored. Phone codes use the same API shape.
+- **Deployxa**: hosts the app, deployed from this repository's Dockerfile on every push to `main`. Render runs the same image as a backup, on the same database. The web service also runs the job worker ([D-26](docs/DECISIONS.md)), so photos are processed without the team laptop; the laptop worker is faster and can run alongside.
 - Backboard, Spine and Momen are not used: none of them does a job this product needs, and adding them for show would make the system harder to explain and audit.
 
 ## Limitations
