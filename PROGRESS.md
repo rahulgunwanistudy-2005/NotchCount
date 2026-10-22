@@ -2,6 +2,16 @@
 
 Read this first. Newest phase at the top.
 
+## Status (Oct 22, 13:30 IST)
+
+- **Estimator:** assignment-level match sampler (DECISIONS D-21). Simulation coverage S3 0.866 → 0.908 and S4 0.901 → 0.923 against the BIBLE pairwise sampler, with bias about halved. S4 is within Monte Carlo error of 0.93; S3 is still about 0.02 short (documented).
+- **Re-ID on real photos:** Kaggle benchmark (`docs/REID_BENCHMARK.md`). DINOv2 int8 AUC 0.988 whole-body (MPDD) and 0.993 faces (DogFaceNet); int8 is within 0.001 of fp32.
+- **Throughput:** batched blob writes plus 4 concurrent worker loops. A 27-photo backlog takes 68.5 s instead of 233 s, and the live worker keeps pace with uploads.
+- **Live demo:** team "Demo team (sample photos, synthetic walk 2)" on https://notchcount.onrender.com, processed by the real pipeline. Published report: `/r/bJriBIPv6Xv0`.
+- **Screens:** `docs/screens/` has 21 screenshots from the live demo at 375 and 1280 px. All pass the automatic audit: no sideways scroll and no serious or critical axe violations (`audit-*.json`).
+- **Field data:** none yet. The real team is untouched and the admin link (valid to Oct 27) is unused.
+- **Worker:** runs on the team laptop (`NC_WORKER_CONCURRENCY=4 uv run nc-worker`). It now backs off during network outages instead of flooding the log.
+
 ## Status check (Oct 21, 19:30 IST)
 
 - **Field pass 1 has not happened in the app.** Production has the team and admin only: no route, survey or photos, and the admin sign-in link (valid to Oct 27) is unused. HUMAN: draw the route, create the survey, invite walkers, then walk.
