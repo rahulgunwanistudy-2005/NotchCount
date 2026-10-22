@@ -6,7 +6,9 @@ notchcount_stats, and writes results back. Reviewer decisions are never overwrit
 
 from __future__ import annotations
 
+import asyncio
 import logging
+import os
 import subprocess
 import uuid
 from typing import Any
@@ -65,6 +67,10 @@ MIN_EAR_LABELS = 20
 
 
 def git_sha() -> str:
+    # Containers have no .git; hosts such as Render pass the deployed commit in the environment.
+    for key in ("NC_GIT_SHA", "RENDER_GIT_COMMIT"):
+        if sha := os.environ.get(key, "").strip():
+            return sha[:7]
     try:
         out = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],  # noqa: S607
@@ -369,7 +375,10 @@ async def _run_estimate(db: AsyncSession, est: Estimate) -> None:
         "git": git_sha(),
     }
     if len(seen_passes) >= 2 and not problems:
-        two = estimate_two_pass(
+        # Thousands of replicates are CPU work; off the event loop so an in-process worker
+        # (NC_RUN_WORKER_INPROCESS) never stalls the API.
+        two = await asyncio.to_thread(
+            estimate_two_pass,
             SurveyData(stat_sightings, stat_pairs, pass_numbers=tuple(seen_passes[:2])),
             replicates=replicates,
             seed=est.seed,

@@ -43,6 +43,10 @@ jobs:
       - run: pnpm run check
       - run: pnpm exec vitest --run
       - run: pnpm run build
+      # Interface tests on the built site with the API mocked (review keys, report, sign-in, landing).
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:ui
+      - run: pnpm audit --prod
 
   secrets:
     runs-on: ubuntu-latest

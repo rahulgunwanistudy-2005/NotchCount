@@ -56,7 +56,7 @@
 			{#if kinds.length === 0}
 				<p class="hint">No jobs yet. Jobs appear when photos upload or someone runs matching.</p>
 			{:else}
-				<div class="scroll" tabindex="0" role="region" aria-label="Job queue by state">
+				<div class="scroll">
 					<table>
 						<thead>
 							<tr>
@@ -135,8 +135,12 @@
 			grid-column: 1 / -1;
 		}
 	}
-	.scroll {
-		overflow-x: auto;
+	@media (max-width: 480px) {
+		th,
+		td {
+			padding: var(--space-2) var(--space-1);
+			font-size: 0.88rem;
+		}
 	}
 	table {
 		width: 100%;

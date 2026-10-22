@@ -84,3 +84,11 @@ New screens:
 - **Field card** opens without signing in, because it is safety guidance.
 
 Photos on the public pages are Wikimedia Commons CC BY-SA 4.0 street dogs, credited in the footer.
+
+**D-26 The web service also runs the worker (Oct 22).** Until now photos were processed only while the team laptop ran `nc-worker`, so the live demo depended on one laptop being awake. The API now starts the job loop in-process (`NC_RUN_WORKER_INPROCESS=true`), with one loop and one ONNX thread (`NC_WORKER_CONCURRENCY=1`, `NC_MODEL_THREADS=1`) to stay inside Render's free 512 MB and 0.1 CPU.
+- **Memory:** the API plus both models processing 8 photos measured 385 MB peak on the laptop.
+- **Keeping the API responsive:** model inference and the 2000-replicate estimate run in threads, off the event loop, so pages keep responding while a job runs.
+- **Throughput:** much lower than the laptop's, roughly 10 to 20 s per photo, so the laptop worker stays the fast path on survey mornings. Several workers can run at once; `FOR UPDATE SKIP LOCKED` keeps them off each other's jobs.
+- **Free-tier sleep:** the service sleeps after 15 idle minutes, and queued jobs resume when the next request wakes it.
+
+**D-27 Mobbin was not used.** Its MCP needs a paid plan (checked Oct 22). Capture and review patterns come from the brief's wireframes and the team's visual reference (D-25) instead.
