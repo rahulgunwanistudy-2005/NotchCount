@@ -175,11 +175,16 @@ async def upload_all(
     }
 
 
-async def drain(handlers: dict[str, object]) -> int:
-    n = 0
-    while await run_once("engine-check", handlers):  # type: ignore[arg-type]
-        n += 1
-    return n
+async def drain(handlers: dict[str, object], loops: int = 4) -> int:
+    """Run `loops` job loops at once until the queue is empty (as the worker does)."""
+
+    async def one_loop() -> int:
+        n = 0
+        while await run_once("engine-check", handlers):  # type: ignore[arg-type]
+            n += 1
+        return n
+
+    return sum(await asyncio.gather(*(one_loop() for _ in range(loops))))
 
 
 async def main(api_url: str) -> None:

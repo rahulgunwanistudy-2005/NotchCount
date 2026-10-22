@@ -59,13 +59,27 @@ async def run_once(worker_id: str, handlers: dict[str, Handler]) -> bool:
     return True
 
 
+MAX_BACKOFF_SECONDS = 60.0
+
+
 async def _loop(worker_id: str, handlers: dict[str, Handler], stop: asyncio.Event | None) -> None:
+    failures = 0
     while stop is None or not stop.is_set():
         try:
             busy = await run_once(worker_id, handlers)
         except Exception:
-            log.exception("worker loop error")
-            busy = False
+            # Usually the network or the database is down. Back off and log the first failure of a
+            # streak in full, then one line per minute at most, so an outage does not flood the log.
+            failures += 1
+            if failures == 1:
+                log.exception("worker loop error; backing off", extra={"worker_id": worker_id})
+            elif failures % 10 == 0:
+                log.warning("still failing", extra={"worker_id": worker_id, "failures": failures})
+            await asyncio.sleep(min(MAX_BACKOFF_SECONDS, IDLE_SECONDS * 2 ** min(failures, 6)))
+            continue
+        if failures:
+            log.info("worker loop recovered", extra={"worker_id": worker_id, "after_failures": failures})
+            failures = 0
         if not busy:
             await asyncio.sleep(IDLE_SECONDS)
 

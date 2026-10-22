@@ -175,27 +175,32 @@ def report(
         "in both passes, so recaptures run high and Chapman runs low. This is a property of the "
         "two-sample method, not of the code, and it is why the report calls the estimate a likely lower "
         "bound.",
-        "S3": "Modelling helps (the same matcher with hard decisions, S6, covers less) but does not reach "
-        "0.93. Why: an ambiguous true match scores like a decoy, so its calibrated pairwise probability is "
-        "small (about 0.02 here) and it is rarely drawn. Calibration puts the missing probability on "
-        "look-alike decoys instead, but the one-to-one repair throws most of that away, because those "
-        "decoys' pass-2 dogs already have clear matches. So m2 runs low and N runs high. The fix is an "
-        "assignment-level model (each pass-2 dog picks one candidate or none, with the recapture rate "
-        "estimated jointly). It is not implemented yet; see docs/LIMITATIONS.md.",
-        "S4": "A look-alike scored above 0.5 can win the one-to-one repair and push out the true partner, "
-        "so a wrong merge often costs a right one. Net m2 falls and N rises, the opposite of what one wrong "
-        "merge alone would do. The sampler sometimes rejects the look-alike, which widens the range, but not "
-        "enough.",
+        "S3": "One in twenty true matches scores like a look-alike. The assignment sampler lets each walk-2 dog "
+        "choose one candidate or none, with likelihood ratios recovered from the calibrated probabilities and "
+        "the recapture rate solved jointly, so a weak true match keeps its probability instead of losing it "
+        "in a one-to-one repair. That lifts coverage well above the BIBLE pairwise sampler on the same data "
+        "(S3p) and halves the bias, but it is still about 0.02 short of the 0.93 target: a small upward bias "
+        "remains because some missed true matches stay missed.",
+        "S4": "One in twenty walk-2 dogs has a look-alike scored above 0.5. The assignment sampler sometimes picks "
+        "the look-alike and sometimes the true partner, and that choice is carried into the range. Coverage is "
+        "within Monte Carlo error of the 0.93 target and above the pairwise sampler (S4p).",
         "S5": "Few recaptures: the Chapman variance and the log-normal interval are rough at small m2, so "
         "coverage drops and ranges are wide. Some surveys have too few matches to estimate at all.",
         "S6": "The same matcher as S3, but every pair is decided at 0.5 and fed to plain Chapman. Missed "
         "matches lower m2 and inflate N, and the interval knows nothing about it. This is what NotchCount "
         "would report without the sampler.",
+        "S3p": "S3 data with the BIBLE 3.4 pairwise sampler (independent pair draws, then greedy one-to-one "
+        "repair), kept for comparison. Calibration moves a weak true match's probability onto look-alikes, "
+        "and the repair discards most of it because those look-alikes already have clear partners.",
+        "S4p": "S4 data with the pairwise sampler, for comparison.",
     }
-    for sid in ("S1", "S2", "S3", "S4", "S5", "S6"):
+    for sid in ("S1", "S2", "S3", "S4", "S5", "S6", "S3p", "S4p"):
         r = by[sid]
         cov = float(r["coverage_N"])  # type: ignore[arg-type]
-        verdict = "meets" if cov >= 0.93 else "falls below"
+        band = 1.96 * float(r["coverage_N_mc_se"])  # type: ignore[arg-type]
+        verdict = (
+            "meets" if cov >= 0.93 else "within Monte Carlo error of" if cov + band >= 0.93 else "falls below"
+        )
         lines.append(f"- **{sid}** ({verdict} 0.93, coverage {cov:.3f}). {notes[sid]}")
     lines += [
         "",

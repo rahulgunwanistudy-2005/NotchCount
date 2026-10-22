@@ -51,6 +51,9 @@ from notchcount_api.db.session import get_sessionmaker  # noqa: E402
 sys.path.insert(0, str(Path(__file__).parent))
 from engine_check import IST, LAT0, LON0, SAMPLES, STEP_DEG, reshoot  # noqa: E402
 
+# engine_check pins the test schema when imported; this script targets the schema it was given.
+os.environ["NC_DB_SCHEMA"] = args.schema
+
 
 async def seed_db() -> dict[str, object]:
     async with get_sessionmaker()() as db:

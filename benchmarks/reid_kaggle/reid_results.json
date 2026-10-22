@@ -1,0 +1,48 @@
+[
+ {
+  "dataset": "MPDD (whole body)",
+  "images": 1657,
+  "identities": 191,
+  "dog_detected": 884,
+  "seconds": 1217,
+  "dinov2_int8": {
+   "auc": 0.9877761353387761,
+   "rank1": 0.9752564876282438,
+   "pairs_pos": 7449,
+   "pairs_neg": 148980,
+   "cos_same_mean": 0.7246308922767639,
+   "cos_diff_mean": 0.24030975997447968
+  },
+  "dinov2_fp32": {
+   "auc": 0.9886337260282707,
+   "rank1": 0.9740494870247435,
+   "pairs_pos": 7449,
+   "pairs_neg": 148980,
+   "cos_same_mean": 0.7292596101760864,
+   "cos_diff_mean": 0.22729460895061493
+  }
+ },
+ {
+  "dataset": "DogFaceNet (faces, 300 dogs)",
+  "images": 1762,
+  "identities": 300,
+  "dog_detected": null,
+  "seconds": 953,
+  "dinov2_int8": {
+   "auc": 0.992868770790617,
+   "rank1": 0.9381384790011351,
+   "pairs_pos": 5671,
+   "pairs_neg": 113420,
+   "cos_same_mean": 0.7332500219345093,
+   "cos_diff_mean": 0.2224520444869995
+  },
+  "dinov2_fp32": {
+   "auc": 0.9929291559102433,
+   "rank1": 0.9477866061293984,
+   "pairs_pos": 5671,
+   "pairs_neg": 113420,
+   "cos_same_mean": 0.7380841374397278,
+   "cos_diff_mean": 0.21523816883563995
+  }
+ }
+]

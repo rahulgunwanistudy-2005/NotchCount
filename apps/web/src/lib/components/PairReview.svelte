@@ -8,6 +8,15 @@
 		onanswer
 	}: { item: PairItem; onanswer: (decision: 'same' | 'different' | 'unsure') => void } = $props();
 
+	const distance = $derived(
+		[
+			item.route_m !== null ? t('review.apart', { m: item.route_m }) : null,
+			item.a.pass_no === item.b.pass_no ? t('review.minutes', { m: Math.round(item.minutes_apart) }) : null
+		]
+			.filter(Boolean)
+			.join(', ')
+	);
+
 	const time = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
 	function onkey(e: KeyboardEvent) {
@@ -30,12 +39,7 @@
 		<img src={item.b.url} alt="Dog photo B, pass {item.b.pass_no}" />
 		<figcaption>{t('review.passAt', { n: item.b.pass_no, time: time(item.b.taken_at) })}</figcaption>
 	</figure>
-	<p class="gap">
-		{#if item.route_m !== null}{t('review.apart', { m: item.route_m })}{/if}
-		{#if item.a.pass_no === item.b.pass_no}
-			{item.route_m !== null ? ', ' : ''}{t('review.minutes', { m: Math.round(item.minutes_apart) })}
-		{/if}
-	</p>
+	<p class="gap">{distance}</p>
 </div>
 
 <div class="answers">

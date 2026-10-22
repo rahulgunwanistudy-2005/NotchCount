@@ -76,7 +76,12 @@ def method_lines(results: dict[str, Any], method: str) -> list[str]:
             f"carries the uncertainty of the matching ({results.get('replicates')} simulations)."
         )
     ps = results.get("point_share") or (results.get("single_pass") or {}).get("share")
-    if ps:
+    if ps and ps["with_visible_ear"] == 0:
+        lines.append(
+            "No ears have been checked yet, so no sterilised share is reported. Label ears in the app, "
+            "then run the estimate again."
+        )
+    elif ps:
         lines.append(
             f"In the best-guess matching, {ps['notched']} of the {ps['with_visible_ear']} dogs whose ear could be "
             f"seen carried the sterilisation ear-notch, and {ps['excluded_not_visible']} dogs with hidden ears are "
