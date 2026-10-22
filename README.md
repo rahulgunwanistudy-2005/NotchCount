@@ -8,7 +8,11 @@ India's Animal Birth Control programme catches, sterilises, vaccinates and ear-n
 
 ## Screens
 
-_Screenshots at 375 px and 1280 px are in [`docs/screens/`](docs/screens/)._ Capture (phone, offline), review queue, report, case file.
+| Landing | Survey dashboard | Public report |
+|---|---|---|
+| ![Landing page](docs/screens/landing-1280.png) | ![Survey dashboard](docs/screens/survey-1280.png) | ![Public report](docs/screens/report-1280.png) |
+
+Every screen at 375 px and 1280 px is in [`docs/screens/`](docs/screens/), each with an overflow and accessibility audit (`audit-*.json`). The screenshots come from the live demo team, whose walk 1 is real street-dog photos and whose walk 2 is synthetic (the same photos re-shot by transforms). The visual direction follows the team's reference ([DECISIONS D-25](docs/DECISIONS.md)).
 
 ## Quick start
 
@@ -25,6 +29,7 @@ uv run nc-admin bootstrap --team "My street" --city "Delhi" --admin "Asha"   # p
 make build-web && make dev-api    # app and API on http://localhost:8000
 make worker                       # in a second terminal: processes photos
 make check                        # lint, types, unit tests, web build
+cd apps/web && pnpm run test:ui   # interface tests on the built site, API mocked
 ```
 
 Database tests (`make test-db`) need `NC_DATABASE_URL` and run in a separate `notchcount_test` schema.
@@ -57,9 +62,13 @@ More in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 **In plain words.** On walk 1 we photograph every dog. On walk 2, the next morning, we do it again. Some dogs are photographed both times. If most dogs from walk 2 were already seen on walk 1, few dogs were missed; if only a few were, many were missed. That ratio gives the total. Each dog's ear tells us whether it was sterilised. The software matches dogs between walks from their appearance, and people check every match it is unsure about.
 
-**The maths.** With n1 and n2 dogs seen on each walk and m2 seen on both, the Chapman estimate is N̂ = (n1+1)(n2+1)/(m2+1) − 1. The 95% interval is Chao's log-normal interval, which never goes below the number of dogs actually seen. Matching is uncertain, so every candidate pair carries a calibrated probability of being the same dog. The estimator draws 2000 plausible matchings, repairs each to a valid one, and draws the population and the sterilised share (Jeffreys Beta) for each. The reported range covers all of that. Details: [`docs/BIBLE.md` §3](docs/BIBLE.md).
+**The maths.** With n1 and n2 dogs seen on each walk and m2 seen on both, the Chapman estimate is N̂ = (n1+1)(n2+1)/(m2+1) − 1. The 95% interval is Chao's log-normal interval, which never goes below the number of dogs actually seen. Matching is uncertain, so every candidate pair carries a calibrated probability of being the same dog. The estimator draws 2000 plausible matchings. In each, every walk-2 dog chooses one walk-1 candidate or "not seen before", weighted by how much more its score looks like a true match than a look-alike ([D-21](docs/DECISIONS.md)). For each matching it draws the population and the sterilised share (Jeffreys Beta). The reported range covers all of that. Details: [`docs/BIBLE.md` §3](docs/BIBLE.md).
 
-**Does it work?** On 1000 simulated surveys per scenario ([`docs/ESTIMATOR_VALIDATION.md`](docs/ESTIMATOR_VALIDATION.md)), 95% intervals covered the true count 93% of the time with perfect matching. With 5% of matches missed they covered 87%, versus 81% for the same data without our uncertainty modelling. That is better, but below our 93% target, and we say why. The matcher and ear model's real accuracy is in [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md) _(after labelling)_.
+**Does it work?**
+- **Simulation.** On 1000 simulated surveys per scenario ([`docs/ESTIMATOR_VALIDATION.md`](docs/ESTIMATOR_VALIDATION.md)), 95% intervals covered the true count 93% of the time with perfect matching. With 5% of matches made wrongly they covered 92.3%, within simulation noise of the target. With 5% of true matches looking like strangers they covered 90.8%, about 2 points short, and we say why.
+- **Matching on real photos.** On real photos of known dogs ([`docs/REID_BENCHMARK.md`](docs/REID_BENCHMARK.md)), the embedder told same-dog pairs from different-dog pairs with AUC 0.988 for whole dogs and 0.993 for faces.
+- **End to end.** Real photos with a known truth went through the whole pipeline, and the counts came out exact ([`docs/ENGINE_CHECK.md`](docs/ENGINE_CHECK.md)).
+- **Still to come.** The matcher and ear model's accuracy on the team's own labels goes in [`docs/MODEL_REPORT.md`](docs/MODEL_REPORT.md) _(after labelling)_.
 
 ## Privacy and data handling
 
@@ -73,7 +82,7 @@ More in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 - **Agentboxd**: one inbox per case (`client_id = case-<id>`). Drafts are created with a draft-only key, and only the Approve button (team admin) sends, with the content hash pinned. Replies arrive by signed webhook and are stored as untrusted text; flagged ones are held. No model reads them.
 - **MojoAuth**: planned for verified observers (phone OTP), behind the `AuthProvider` interface. _Not yet integrated: waiting for the account key; invite links are the interim ([D-02](docs/DECISIONS.md))._
-- **Deployxa**: target host for web, API and worker. _Interim: Render, until the account is set up._
+- **Deployxa**: target host for web, API and worker. _Interim: Render, until the account is set up. The Render web service also runs the job worker ([D-26](docs/DECISIONS.md)), so the live app processes photos without the team laptop; the laptop worker is faster and can run alongside._
 - Backboard, Spine and Momen are not used: none of them does a job this product needs, and adding them for show would make the system harder to explain and audit.
 
 ## Limitations
@@ -85,7 +94,9 @@ See [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md). The main ones: dogs differ in 
 - Team: _[names and roles]_. AI assistance is disclosed in [`docs/AI_DISCLOSURE.md`](docs/AI_DISCLOSURE.md).
 - Licence: AGPL-3.0 ([LICENSE](LICENSE)).
 - Models: Ultralytics YOLO11s (AGPL-3.0); DINOv2 ViT-S/14 by Meta AI (Apache-2.0).
-- Fonts: Anek Devanagari and Mukta (SIL OFL 1.1), self-hosted via Fontsource.
+- Fonts: Merriweather, Jost and Mukta (SIL OFL 1.1), self-hosted.
+- Visual reference: "Cub Club Site and Dashboard" by Julia Pelachini Farias (DR Studio) on Dribbble. We followed its visual language; no assets were copied.
+- Landing photos: "Street Dog 100" and "Street Dog 105" by Slyronit, Wikimedia Commons, CC BY-SA 4.0, cropped.
 - Maps: [OpenFreeMap](https://openfreemap.org), © OpenMapTiles, data © OpenStreetMap contributors.
 - Test photos: Wikimedia Commons, CC BY-SA 4.0 (see `packages/pipeline/tests/CREDITS.md`).
-- Design process: Anthropic's frontend-design skill; Mobbin for camera-capture and review-flow references _(credited once used)_.
+- Design process: Anthropic's frontend-design skill. Mobbin was not used (paid plan needed, [D-27](docs/DECISIONS.md)).

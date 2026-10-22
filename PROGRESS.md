@@ -2,6 +2,14 @@
 
 Read this first. Newest phase at the top.
 
+## Status (Oct 22, 17:30 IST)
+
+- **New visual design** after the team's reference (D-25). It covers every screen: landing, public report, sign-in, the dashboard shell, survey dashboard, labelling, case file, team, field card, and a new admin health page. Data colours were checked for colour-blind separation. Every screen was shot at 375 and 1280 px; axe found no serious violations and no screen scrolls sideways.
+- **Hosted worker:** the Render service now processes photos itself (D-26), so the live demo no longer needs the laptop. It is slower than the laptop, which stays the fast path on survey mornings.
+- **CI:** interface tests on the built site with the API mocked, covering review keys, the public report, signed-out access and the landing page, plus `pnpm audit`.
+- **Dependency audit:** pip-audit found nothing in the 54 runtime Python packages. pnpm audit found one low advisory in a build-time dependency (cookie), fixed by an override.
+- **Not possible without the team:** field walks, labels, keys (Agentboxd, MojoAuth, Deployxa), the Hindi review, and the video. Mobbin needs a paid plan (D-27).
+
 ## Status (Oct 22, 13:30 IST)
 
 - **Estimator:** assignment-level match sampler (DECISIONS D-21). Simulation coverage S3 0.866 → 0.908 and S4 0.901 → 0.923 against the BIBLE pairwise sampler, with bias about halved. S4 is within Monte Carlo error of 0.93; S3 is still about 0.02 short (documented).
