@@ -56,10 +56,10 @@
 
 <svelte:head><title>{titles[mode]}</title></svelte:head>
 
-<div class="check">
+<div class="check panel">
 	<div class="head">
 		<h1>{titles[mode]}</h1>
-		<a href="/app/survey/{surveyId}">Back to survey</a>
+		<a class="btn quiet" href="/app/survey/{surveyId}">Back to survey</a>
 	</div>
 	<p class="intro">{intro[mode]}</p>
 	{#if error}<p class="error" role="alert">{error}</p>{/if}
@@ -76,28 +76,35 @@
 		</p>
 		<p class="keys">{item.kind === 'pair' ? t('review.keys') : t('ears.keys')}</p>
 	{:else if !loading}
-		<p class="empty">{t('review.done')}</p>
-		<a class="btn" href="/app/survey/{surveyId}">Back to survey</a>
+		<div class="empty">
+			<p>{t('review.done')}</p>
+			<a class="btn" href="/app/survey/{surveyId}">Back to survey</a>
+		</div>
 	{/if}
 </div>
 
 <style>
 	.check {
-		max-width: 60rem;
+		max-width: 64rem;
 	}
 	.head {
 		display: flex;
 		justify-content: space-between;
-		align-items: baseline;
-		gap: var(--space-4);
+		align-items: center;
+		gap: var(--space-3) var(--space-4);
 		flex-wrap: wrap;
+	}
+	.head h1 {
+		margin: 0;
+		font-size: var(--step-3);
 	}
 	.intro {
 		color: var(--ink-soft);
+		margin-top: var(--space-2);
 	}
 	.count {
-		margin-top: var(--space-4);
-		font-weight: 600;
+		margin: var(--space-4) 0 var(--space-1);
+		font-weight: 500;
 	}
 	.done {
 		font-weight: 400;
@@ -107,8 +114,17 @@
 	.keys {
 		color: var(--fog-text);
 		font-size: 0.94rem;
+		margin: 0;
 	}
 	.empty {
-		font-size: var(--step-1);
+		background: var(--sage);
+		border-radius: var(--radius-panel);
+		padding: var(--space-6);
+	}
+	.empty p {
+		font-family: var(--font-display);
+		font-size: var(--step-2);
+		color: var(--slate);
+		font-weight: 700;
 	}
 </style>

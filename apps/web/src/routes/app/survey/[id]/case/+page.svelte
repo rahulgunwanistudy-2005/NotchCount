@@ -98,14 +98,20 @@
 	onMount(load);
 </script>
 
-<h1>Case file</h1>
-<p><a href="/app/survey/{surveyId}">Back to survey</a></p>
+<div class="head">
+	<h1>Case file</h1>
+	<a class="btn quiet" href="/app/survey/{surveyId}">Back to survey</a>
+</div>
+<p class="lead">
+	The officer responsible for this ward gets one email with the report. You read it here first; nothing is sent
+	until a team member presses Approve and send.
+</p>
 {#if error}<p class="error" role="alert">{error}</p>{/if}
-{#if toast}<p class="toast" role="status">{toast}</p>{/if}
+{#if toast}<p class="notice" role="status">{toast}</p>{/if}
 
 {#each cases as c (c.id)}
 	{@const pending = pendingDraft(c)}
-	<section class="case">
+	<section class="case panel">
 		<div class="who">
 			<h2>{c.authority_name}</h2>
 			<p class="meta">{c.authority_email}. Replies come back to {c.inbox_address ?? 'the case inbox once drafted'}.</p>
@@ -113,8 +119,9 @@
 
 		<div class="columns">
 			<ol class="timeline">
-				{#each c.events as e (e.id)}
+				{#each c.events as e, i (e.id)}
 					<li class={e.kind}>
+						<span class="step" aria-hidden="true">{i + 1}</span>
 						<span class="what">{label[e.kind]}</span>
 						<span class="when">{when(e.created_at)}{e.actor_name ? `, ${e.actor_name}` : ''}</span>
 						{#if e.kind === 'reply' || e.kind === 'held'}
@@ -155,7 +162,7 @@
 	</section>
 {/each}
 
-<section class="new">
+<section class="new panel">
 	<h2>{cases.length ? 'Add another official' : 'Who is responsible for this ward?'}</h2>
 	<form
 		onsubmit={(e) => {
@@ -177,10 +184,26 @@
 </section>
 
 <style>
+	.head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-3);
+		margin: var(--space-2) 0 var(--space-2);
+	}
+	.head h1 {
+		margin: 0;
+	}
+	.lead {
+		color: var(--ink-soft);
+		margin-bottom: var(--space-5);
+	}
 	.case {
-		border-top: 2px solid var(--ink);
-		padding-top: var(--space-4);
-		margin-top: var(--space-5);
+		margin-bottom: var(--space-4);
+	}
+	.who h2 {
+		margin-bottom: var(--space-1);
 	}
 	.meta,
 	.when {
@@ -189,33 +212,67 @@
 	.columns {
 		display: grid;
 		gap: var(--space-5);
+		margin-top: var(--space-4);
 	}
-	@media (min-width: 900px) {
+	@media (min-width: 1000px) {
 		.columns {
 			grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
 		}
 	}
+	/* The timeline really is a sequence: drafted, approved, sent, replied. */
 	.timeline {
+		list-style: none;
 		margin: 0;
-		padding-left: var(--space-5);
+		padding: 0;
+		position: relative;
 	}
 	.timeline li {
-		margin-bottom: var(--space-4);
+		position: relative;
+		padding: 0 0 var(--space-5) 3.2rem;
+	}
+	.timeline li:not(:last-child)::before {
+		content: '';
+		position: absolute;
+		left: 1.15rem;
+		top: 2.4rem;
+		bottom: 0.2rem;
+		border-left: 2px dashed var(--sage-strong);
+	}
+	.step {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 2.4rem;
+		height: 2.4rem;
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+		background: var(--peach-wash);
+		color: var(--slate);
+		font-family: var(--font-display);
+		font-weight: 700;
+	}
+	.timeline .empty {
+		padding-left: 0;
+		color: var(--fog-text);
 	}
 	.what {
-		font-weight: 600;
+		font-family: var(--font-display);
+		font-weight: 700;
+		color: var(--slate);
 		display: block;
 	}
-	.timeline .sent .what,
-	.timeline .reply .what {
-		color: var(--notch-teal);
+	.timeline .sent .step,
+	.timeline .reply .step {
+		background: var(--notched-wash);
 	}
 	.timeline .held .what,
 	.timeline .error .what {
 		color: var(--danger);
 	}
 	.warn {
-		background: var(--sodium-wash);
+		background: var(--peach-wash);
+		border-radius: 12px;
 		padding: var(--space-2) var(--space-3);
 		margin: var(--space-2) 0;
 	}
@@ -229,21 +286,19 @@
 		padding-left: var(--space-3);
 		max-height: 18rem;
 		overflow: auto;
+		margin-top: var(--space-2);
+	}
+	.draft h3 {
+		font-size: var(--step-1);
 	}
 	.letter {
-		background: #fff;
-		padding: var(--space-4);
+		background: var(--surface-soft);
+		border-radius: var(--radius-tile);
+		padding: var(--space-5);
 		margin-bottom: var(--space-3);
 		max-width: var(--measure);
 	}
-	.toast {
-		background: var(--notch-teal-wash);
-		border-left: 6px solid var(--notch-teal);
-		padding: var(--space-3) var(--space-4);
-		font-weight: 600;
-	}
 	.new {
-		margin-top: var(--space-7);
-		max-width: 32rem;
+		max-width: 36rem;
 	}
 </style>

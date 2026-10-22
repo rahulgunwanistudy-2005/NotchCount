@@ -43,8 +43,8 @@
 </div>
 
 <div class="answers">
-	<button class="btn" onclick={() => onanswer('same')}>{t('review.same')} <kbd>S</kbd></button>
-	<button class="btn" onclick={() => onanswer('different')}>{t('review.different')} <kbd>D</kbd></button>
+	<button class="btn same" onclick={() => onanswer('same')}>{t('review.same')} <kbd>S</kbd></button>
+	<button class="btn peach" onclick={() => onanswer('different')}>{t('review.different')} <kbd>D</kbd></button>
 	<button class="btn quiet" onclick={() => onanswer('unsure')}>{t('review.unsure')} <kbd>N</kbd></button>
 </div>
 
@@ -56,20 +56,20 @@
 	}
 	figure {
 		margin: 0;
-		background: var(--ink);
 		display: grid;
-		grid-template-rows: minmax(0, 1fr) auto;
+		gap: var(--space-2);
 	}
 	img {
 		width: 100%;
 		height: min(46vh, 420px);
 		object-fit: contain;
 		display: block;
+		background: var(--ink);
+		border-radius: var(--radius-tile);
 	}
 	figcaption {
-		background: var(--limewash);
-		padding: var(--space-1) 0;
-		font-weight: 600;
+		font-weight: 500;
+		color: var(--slate);
 	}
 	.gap {
 		grid-column: 1 / -1;
@@ -84,19 +84,17 @@
 	}
 	.answers .btn {
 		min-height: 56px;
-		padding: 0 var(--space-2);
-	}
-	kbd {
-		font: inherit;
-		font-size: 0.8rem;
-		opacity: 0.75;
-		border: 1px solid currentColor;
-		border-radius: 4px;
-		padding: 0 4px;
+		padding: var(--space-1) var(--space-2);
+		border-radius: var(--radius-tile);
+		line-height: 1.2;
 	}
 	@media (max-width: 480px) {
 		kbd {
 			display: none;
+		}
+		img {
+			height: auto;
+			max-height: 56vh;
 		}
 	}
 </style>

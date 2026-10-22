@@ -66,3 +66,21 @@ Every external dependency checked against its own docs, with the date. Every dev
 **D-23 Re-identification is benchmarked on real identity-labelled dog photos** (WildlifeReID-10k on Kaggle, dog subsets MPDD and DogFaceNet, both CC BY 4.0). The bundle's terms forbid commercial use and re-uploading; we only evaluate, attribute, and do not redistribute. The benchmark runs as a Kaggle notebook (`benchmarks/reid_kaggle/`) that installs this repo's pipeline from GitHub and the models from release `models-v1`.
 
 **D-24 Reports can be published without filing.** "Publish report" gives a survey its public address. Previously only drafting a case email did, which tied the public report to Agentboxd keys.
+
+**D-25 Visual direction changed by the team (Oct 22): after the "Cub Club Site and Dashboard" shot on Dribbble.** The team asked for the frontend to follow that reference instead of the brief's limewash and Anek starting plan. We took its visual language, not its content or branding:
+- Colour: sage canvas, slate serif headings, peach pills, and white panels on a sage dashboard.
+- Shapes: organic blobs, thin hand-drawn moss lines, peach dash hatching, and an arch-masked hero photo.
+- Badge: a round badge with circular lettering.
+- Type: Merriweather for headings and Jost for UI, both Latin subsets vendored (SIL OFL), with Mukta kept as the fallback for Devanagari.
+
+What did not change:
+- **Data colours keep their meaning.** Notch teal `#2A7A70` means sterilised, clay `#CF7A30` means not sterilised, and hatched fog means ear not visible. These were checked with the dataviz palette validator: protan ΔE 11.8, tritan 27.9, normal 23.3, both at least 3:1 on white. Teal reads below the validator's chroma floor, so every mark carries a legend or text label.
+- **The brief's rules stand:** every number has its range, sentence case, no eyebrows, 44 px targets, and reduced motion respected.
+- **Contrast:** peach pills carry ink text (6.6:1), not white. The reference uses white, which fails contrast.
+- **Numbered markers appear only for real sequences:** the four steps of a survey and the case timeline.
+
+New screens:
+- **System health page** for admins: queue depth by job and state, jobs that gave up, photos by state, and model versions (SESSION_PROMPT §5).
+- **Field card** opens without signing in, because it is safety guidance.
+
+Photos on the public pages are Wikimedia Commons CC BY-SA 4.0 street dogs, credited in the footer.

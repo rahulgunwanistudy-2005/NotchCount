@@ -149,7 +149,7 @@
 		overflow: visible;
 	}
 	.route {
-		stroke: var(--survey-blue);
+		stroke: var(--moss);
 		stroke-width: 4;
 		stroke-linecap: round;
 	}
@@ -170,7 +170,7 @@
 		fill: var(--notch-teal);
 	}
 	.dot.not_notched {
-		fill: var(--sodium);
+		fill: var(--plain);
 	}
 	.dot.not_visible {
 		fill: url(#hatch);
@@ -192,12 +192,12 @@
 		stroke-width: 2;
 	}
 	.bar {
-		fill: var(--notch-teal-wash);
-		stroke: var(--notch-teal);
+		fill: var(--sage);
+		stroke: var(--moss);
 		stroke-width: 1.5;
 	}
 	.median {
-		stroke: var(--ink);
+		stroke: var(--slate);
 		stroke-width: 3;
 	}
 	.seen {

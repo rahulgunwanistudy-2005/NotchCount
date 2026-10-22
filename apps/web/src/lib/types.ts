@@ -164,3 +164,37 @@ export interface Estimate {
 	seed: number;
 	created_at: string;
 }
+
+export interface StripDogOut {
+	passes: number[];
+	status: 'notched' | 'not_notched' | 'not_visible';
+	route_m?: number | null;
+}
+
+/** GET /reports/{slug}: route-level numbers only, safe to show anyone. */
+export interface PublicReport {
+	slug: string;
+	title: string;
+	team: string;
+	city: string;
+	route_name: string;
+	headline: { population: string | null; share: string | null; deficit: string | null; note: string | null };
+	method: string;
+	method_lines: string[];
+	assumptions: string[];
+	results: {
+		counts?: { n1: number; n2: number; m2: number; distinct: number };
+		population?: Summary | null;
+		share?: Summary | null;
+		deficit?: Summary | null;
+		point_share?: ShareJson;
+		comparability_problems?: string[];
+		decided_pairs?: number;
+		pairs?: number;
+	};
+	code_version: string;
+	data_hash: string | null;
+	seed: number;
+	computed_at: string;
+	strip: StripDogOut[];
+}

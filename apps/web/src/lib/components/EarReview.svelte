@@ -30,13 +30,14 @@
 <style>
 	figure {
 		margin: 0;
-		background: var(--ink);
 	}
 	img {
 		width: 100%;
 		height: min(52vh, 480px);
 		object-fit: contain;
 		display: block;
+		background: var(--ink);
+		border-radius: var(--radius-tile);
 	}
 	.hint {
 		color: var(--ink-soft);
@@ -49,32 +50,34 @@
 	}
 	.answers .btn {
 		min-height: 56px;
-		padding: 0 var(--space-2);
+		padding: var(--space-1) var(--space-2);
+		border-radius: var(--radius-tile);
+		line-height: 1.2;
 	}
 	.notched {
-		background: var(--notch-teal);
-		border-color: var(--notch-teal);
+		background: var(--notched);
+		border-color: var(--notched);
 	}
 	.plain {
-		background: var(--sodium);
-		border-color: var(--sodium);
-		color: var(--ink);
+		background: var(--plain);
+		border-color: var(--plain);
+		color: #1d1206;
 	}
 	.hidden {
 		background-image: var(--hatch);
-		background-color: #fff;
-	}
-	kbd {
-		font: inherit;
-		font-size: 0.8rem;
-		opacity: 0.75;
-		border: 1px solid currentColor;
-		border-radius: 4px;
-		padding: 0 4px;
+		background-color: var(--surface);
+		color: var(--ink);
+		text-shadow:
+			0 0 4px #fff,
+			0 0 4px #fff;
 	}
 	@media (max-width: 480px) {
 		kbd {
 			display: none;
+		}
+		img {
+			height: auto;
+			max-height: 56vh;
 		}
 	}
 </style>

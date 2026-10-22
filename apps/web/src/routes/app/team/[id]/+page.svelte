@@ -106,18 +106,22 @@
 		});
 </script>
 
-<h1>{team?.name ?? 'Team'}</h1>
+<div class="head">
+	<h1>{team?.name ?? 'Team'}</h1>
+	{#if team}<span class="hint">{team.city}</span>{/if}
+</div>
 {#if error}<p class="error" role="alert">{error}</p>{/if}
 
 <div class="columns">
-	<section>
+	<section class="panel">
 		<h2>People</h2>
 		<ul class="list">
 			{#each members as m (m.user_id)}
 				<li>
-					<span>{m.display_name}</span>
-					<span class="role">{m.role}</span>
-					<button class="btn quiet" onclick={() => reinvite(m)}>New sign-in link</button>
+					<span class="avatar" aria-hidden="true">{m.display_name.trim().charAt(0).toUpperCase()}</span>
+					<span class="name">{m.display_name}</span>
+					<span class="chip" class:done={m.role === 'admin'}>{m.role}</span>
+					<button class="btn quiet small" onclick={() => reinvite(m)}>New sign-in link</button>
 				</li>
 			{/each}
 		</ul>
@@ -151,13 +155,13 @@
 		{/if}
 	</section>
 
-	<section>
+	<section class="panel">
 		<h2>Routes</h2>
 		<ul class="list">
 			{#each routes as r (r.id)}
 				<li>
-					<span>{r.name}</span>
-					<span class="num">{(r.length_m / 1000).toFixed(2)} km, corridor {r.corridor_m} m</span>
+					<span class="name">{r.name}</span>
+					<span class="num hint">{(r.length_m / 1000).toFixed(2)} km, corridor {r.corridor_m} m</span>
 				</li>
 			{/each}
 		</ul>
@@ -185,10 +189,15 @@
 			<button class="btn" onclick={() => (drawing = true)}>Draw a route</button>
 		{/if}
 
-		<h2 class="gap">Surveys</h2>
+	</section>
+
+	<section class="panel wide">
+		<h2>Surveys</h2>
 		<ul class="list">
 			{#each surveys as s (s.id)}
-				<li><a href="/app/survey/{s.id}">{s.name}</a><span>{s.route.name}, starts {s.start_window_local.slice(0, 5)}</span></li>
+				<li>
+					<a class="name" href="/app/survey/{s.id}">{s.name}</a><span class="hint">{s.route.name}, starts {s.start_window_local.slice(0, 5)}</span>
+				</li>
 			{/each}
 		</ul>
 		{#if routes.length > 0}
@@ -222,53 +231,86 @@
 </div>
 
 <style>
+	.head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: var(--space-2) var(--space-4);
+		margin: var(--space-2) 0 var(--space-5);
+	}
+	.head h1 {
+		margin: 0;
+	}
 	.columns {
 		display: grid;
-		gap: var(--space-6);
+		gap: var(--space-4);
 	}
 	.columns > section {
 		min-width: 0;
 	}
-	@media (min-width: 900px) {
+	@media (min-width: 1000px) {
 		.columns {
 			grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+			align-items: start;
+		}
+		.wide {
+			grid-column: 1 / -1;
 		}
 	}
 	.list {
 		list-style: none;
 		padding: 0;
-		margin: 0 0 var(--space-4);
-		border-top: 1px solid var(--rule);
+		margin: 0 0 var(--space-5);
+		display: grid;
+		gap: var(--space-2);
 	}
 	.list li {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--space-2) var(--space-4);
+		gap: var(--space-2) var(--space-3);
 		align-items: center;
-		padding: var(--space-2) 0;
-		border-bottom: 1px solid var(--rule);
+		padding: var(--space-2) var(--space-3);
+		border-radius: var(--radius-tile);
+		background: var(--surface-soft);
 		min-height: var(--target);
 	}
-	.role {
-		color: var(--fog-text);
+	.name {
+		font-weight: 500;
 		flex: 1;
+		min-width: 6rem;
+	}
+	a.name {
+		font-family: var(--font-display);
+		font-weight: 700;
+	}
+	.small {
+		min-height: 36px;
+		padding: 0 var(--space-4);
+		font-size: 0.9rem;
 	}
 	.invite {
 		margin-top: var(--space-4);
-		padding: var(--space-4);
-		background: #fff;
-		border-left: 6px solid var(--notch-teal);
+		padding: var(--space-4) var(--space-5);
+		background: var(--sage);
+		border-radius: var(--radius-tile);
 		display: grid;
 		gap: var(--space-3);
+	}
+	.invite p {
+		margin: 0;
+		font-weight: 500;
 	}
 	.invite code {
 		word-break: break-all;
 		font-size: 0.9rem;
+		background: var(--surface);
+		padding: var(--space-2) var(--space-3);
+		border-radius: 10px;
 	}
-	.gap {
-		margin-top: var(--space-6);
+	form {
+		max-width: 36rem;
 	}
 	form .btn {
-		margin-right: var(--space-2);
+		margin: 0 var(--space-2) var(--space-2) 0;
 	}
 </style>

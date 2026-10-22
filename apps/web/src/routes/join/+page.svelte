@@ -3,7 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { api } from '$lib/api';
 	import { forgetAll } from '$lib/cache';
-	import NotchMark from '$lib/components/NotchMark.svelte';
+	import Badge from '$lib/components/Badge.svelte';
+	import Doodle from '$lib/components/Doodle.svelte';
 	import { t } from '$lib/i18n/index.svelte';
 
 	let message = $state(t('join.title'));
@@ -30,17 +31,40 @@
 </script>
 
 <main class="join">
-	<NotchMark size={56} />
-	<p class:error={failed} role="status">{message}</p>
+	<div class="card">
+		<Doodle shape="bean" class="join-bean" />
+		<Badge size={132} label="NotchCount" />
+		<p class:error={failed} role="status">{message}</p>
+		{#if failed}<a class="btn quiet" href="/">Go to the home page</a>{/if}
+	</div>
 </main>
 
 <style>
 	.join {
-		max-width: 32rem;
-		margin: 0 auto;
-		padding: var(--space-7) var(--space-4);
+		min-height: 100vh;
 		display: grid;
+		place-items: center;
+		padding: var(--space-5);
+	}
+	.card {
+		position: relative;
+		background: var(--surface);
+		border-radius: var(--radius-shell);
+		padding: var(--space-7) var(--space-6);
+		max-width: 30rem;
+		width: 100%;
+		display: grid;
+		justify-items: center;
 		gap: var(--space-5);
-		color: var(--ink);
+		text-align: center;
+	}
+	.card p {
+		margin: 0;
+		font-size: var(--step-1);
+	}
+	.card :global(.join-bean) {
+		width: 56px;
+		right: -18px;
+		bottom: -22px;
 	}
 </style>
