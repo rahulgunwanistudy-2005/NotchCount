@@ -1,4 +1,8 @@
-import { test, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test, type Page } from '@playwright/test';
+import { writeFileSync } from 'node:fs';
+
+const audit: Record<string, { overflowPx: number; serious: string[] }> = {};
 
 /** Full-page screenshots of every screen at phone and desktop width, from real data. */
 const out = '../../docs/screens';
@@ -20,8 +24,17 @@ async function shot(page: Page, path: string, file: string, waitFor?: string) {
 	await page.waitForFunction(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0), null, {
 		timeout: 60_000
 	});
-	await page.waitForTimeout(3000); // the route-strip animation runs about 2.5 s
-	await page.screenshot({ path: `${out}/${file}`, fullPage: true });
+	await page.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => undefined))));
+	await page.waitForTimeout(6000); // route-strip animation (2.5 s) and headless image paint
+	await page.screenshot({ path: `${out}/${file}`, fullPage: true, animations: 'disabled' });
+	const overflowPx = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+	const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+	const serious = axe.violations
+		.filter((v) => v.impact === 'serious' || v.impact === 'critical')
+		.map((v) => `${v.id}: ${v.nodes.length} node(s)`);
+	audit[file] = { overflowPx, serious };
+	expect.soft(overflowPx, `${file} scrolls sideways`).toBeLessThanOrEqual(0);
+	expect.soft(serious, `${file} accessibility`).toEqual([]);
 }
 
 for (const size of sizes) {
@@ -46,5 +59,6 @@ for (const size of sizes) {
 			await shot(page, `/app/capture/${survey}/3`, `capture-${size.name}.png`, 'dogs this pass');
 		}
 		await ctx.close();
+		writeFileSync(`${out}/audit-${size.name}.json`, JSON.stringify(audit, null, 1));
 	});
 }

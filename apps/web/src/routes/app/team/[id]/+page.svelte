@@ -226,6 +226,9 @@
 		display: grid;
 		gap: var(--space-6);
 	}
+	.columns > section {
+		min-width: 0;
+	}
 	@media (min-width: 900px) {
 		.columns {
 			grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
