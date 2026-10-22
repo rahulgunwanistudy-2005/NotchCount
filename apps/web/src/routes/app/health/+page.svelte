@@ -145,6 +145,13 @@
 	table {
 		width: 100%;
 		border-collapse: collapse;
+		table-layout: fixed;
+	}
+	thead th:first-child {
+		width: 34%;
+	}
+	tbody th {
+		overflow-wrap: anywhere;
 	}
 	th,
 	td {

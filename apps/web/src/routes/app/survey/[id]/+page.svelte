@@ -402,11 +402,11 @@
 		color: var(--slate);
 		white-space: nowrap;
 	}
-	td {
+	.pass-no,
+	td .chip {
 		white-space: nowrap;
 	}
 	.who {
-		white-space: normal;
 		display: inline-flex;
 		align-items: center;
 		gap: var(--space-2);

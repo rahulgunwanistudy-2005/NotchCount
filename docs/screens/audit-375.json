@@ -1,9 +1,7 @@
 {
  "landing-375.png": {
   "overflowPx": 0,
-  "serious": [
-   "color-contrast: 1 node(s): a[href$=\"#try\"]"
-  ]
+  "serious": []
  },
  "report-375.png": {
   "overflowPx": 0,
@@ -11,6 +9,42 @@
  },
  "signed-out-375.png": {
   "overflowPx": 0,
+  "serious": []
+ },
+ "home-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "survey-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "label-pairs-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "label-ears-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "review-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "case-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "team-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "field-card-375.png": {
+  "overflowPx": 0,
+  "serious": []
+ },
+ "health-375.png": {
+  "overflowPx": 12,
   "serious": []
  }
 }

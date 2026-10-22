@@ -2,6 +2,22 @@
 
 Read this first. Newest phase at the top.
 
+## Status (Oct 23, 01:00 IST)
+
+- **Landing page rebuilt for impact (D-29):**
+  - A street simulator walked twice with the engine's own maths, pinned to `notchcount_stats` by a test.
+  - A dark band of sourced problem numbers.
+  - Real detector, blur and matcher output on real photos.
+  - A strip of real crops.
+- **Dashboard:** a gallery of every dog the estimate found (`GET /surveys/{id}/dogs`, team-only), filterable, with notch-cut tiles for person-confirmed notches. The sterilised share sits on a dial against the 70% target, also on the public report.
+- **MojoAuth (D-28):** email one-time codes beside invite links, checked against MojoAuth's OpenAPI spec. Only a keyed hash of the address is stored. The key is set on the team's Deployxa project, not yet on Render.
+- **Screens:** `docs/screens/` was re-captured from the live site: 26 files, 12 screens at each width. One overflow, the health page at 375 px, is fixed; the re-capture is pending.
+- **Tests:** 5 interface tests (with the dashboard gallery and the simulator), 8 web unit tests and 46 Python tests pass. API unit tests no longer wipe the test schema.
+- **HUMAN:**
+  - Agentboxd keys and webhook (steps in the private demo pack).
+  - Deployxa environment variables (the list is in the demo pack).
+  - Field walks and labels.
+
 ## Status (Oct 22, 17:30 IST)
 
 - **New visual design** after the team's reference (D-25). It covers every screen: landing, public report, sign-in, the dashboard shell, survey dashboard, labelling, case file, team, field card, and a new admin health page. Data colours were checked for colour-blind separation. Every screen was shot at 375 and 1280 px; axe found no serious violations and no screen scrolls sideways.

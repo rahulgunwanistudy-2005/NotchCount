@@ -19,6 +19,7 @@ Neighborhood Hacks allows AI assistants and requires disclosure. This file is ke
 - Simulation harness (`sim/`), matching, ear and assignment code (`packages/pipeline`), case filing and public report, and the engine check script (`scripts/engine_check.py`).
 - Draft Hindi strings (not yet checked; hidden in the app until a team member reviews them).
 - The Oct 22 visual redesign (`apps/web`: tokens, badge, dashboard shell, every screen, the admin health page). It follows a reference the team chose (DECISIONS D-25). The AI wrote all of the code and adapted the reference's look to this product. The team chose the reference and decides whether to keep it.
+- The Oct 23 landing and dashboard work: the street simulator (`lib/sim.ts`, `StreetSim.svelte`), the pipeline pictures script (`scripts/landing_assets.py`), the dog gallery endpoint and screen, the share dial, and MojoAuth email sign-in (D-28, D-29). The team asked for more visual impact; the AI designed and wrote these.
 - Interface tests with a mocked API (`apps/web/ui/`), the in-process worker setting (D-26), the re-ID benchmark notebook (`benchmarks/reid_kaggle/`) and the demo seed script (`scripts/demo_seed.py`).
 
 ## What the team did

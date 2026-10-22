@@ -217,11 +217,18 @@
 		background: var(--plain-wash);
 		color: #6d3a12;
 	}
-	.ear.not_visible,
-	.ear.unknown {
+	.ear.not_visible {
 		background-image: var(--hatch);
 		background-color: var(--surface);
 		color: var(--ink);
+		text-shadow:
+			0 0 3px #fff,
+			0 0 3px #fff;
+	}
+	.ear.unknown {
+		background: var(--canvas);
+		color: var(--fog-text);
+		font-weight: 500;
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.tile {
