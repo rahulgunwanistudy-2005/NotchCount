@@ -1,0 +1,158 @@
+{
+ "hero": {
+  "hero-dog": {
+   "w": 640,
+   "h": 800,
+   "box": [
+    188.9,
+    81.1,
+    584.2,
+    715.9
+   ],
+   "conf": 0.94
+  },
+  "sitting-dog": {
+   "w": 640,
+   "h": 800,
+   "box": [
+    98.9,
+    213.7,
+    403.3,
+    761.8
+   ],
+   "conf": 0.957
+  }
+ },
+ "hero_similarity": 0.501,
+ "street": {
+  "w": 675,
+  "h": 900,
+  "persons": 4,
+  "vehicles": 1,
+  "boxes": [
+   {
+    "kind": "vehicle",
+    "box": [
+     24.3,
+     188.8,
+     665.1,
+     614.7
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     185.8,
+     337.7,
+     287.3,
+     714.6
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     40.6,
+     334.3,
+     205.5,
+     754.0
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     557.4,
+     324.7,
+     674.6,
+     733.8
+    ]
+   },
+   {
+    "kind": "person",
+    "box": [
+     0.0,
+     454.8,
+     65.9,
+     728.8
+    ]
+   }
+  ]
+ },
+ "crops": [
+  {
+   "src": "/img/crops/dog-01.webp",
+   "file": "dog_01.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-02.webp",
+   "file": "dog_02.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-03.webp",
+   "file": "dog_03.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-04.webp",
+   "file": "dog_04.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-06.webp",
+   "file": "dog_06.jpg",
+   "quality": 0.77
+  },
+  {
+   "src": "/img/crops/dog-07.webp",
+   "file": "dog_07.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-08.webp",
+   "file": "dog_08.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-09.webp",
+   "file": "dog_09.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-10.webp",
+   "file": "dog_10.jpg",
+   "quality": 0.7
+  },
+  {
+   "src": "/img/crops/dog-11.webp",
+   "file": "dog_11.jpg",
+   "quality": 0.7
+  },
+  {
+   "src": "/img/crops/dog-12.webp",
+   "file": "dog_12.jpg",
+   "quality": 0.7
+  },
+  {
+   "src": "/img/crops/dog-13.webp",
+   "file": "dog_13.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-14.webp",
+   "file": "dog_14.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-15.webp",
+   "file": "dog_15.jpg",
+   "quality": 1.0
+  },
+  {
+   "src": "/img/crops/dog-16.webp",
+   "file": "dog_16.jpg",
+   "quality": 0.88
+  }
+ ],
+ "model_version": "detector@640+dinov2_vits14_int8@224"
+}

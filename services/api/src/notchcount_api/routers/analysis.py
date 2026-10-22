@@ -18,6 +18,7 @@ from notchcount_api.blobs import sign
 from notchcount_api.db.models import (
     Detection,
     Estimate,
+    Individual,
     MatchPair,
     ModelVersion,
     NotchCallRow,
@@ -28,6 +29,7 @@ from notchcount_api.db.models import (
     PassRow,
     Photo,
     Role,
+    SightingRow,
     Survey,
     User,
 )
@@ -93,6 +95,18 @@ class ProgressOut(BaseModel):
     review_ears_left: int
     match_model: str | None
     notch_model: str | None
+
+
+class DogOut(BaseModel):
+    """One dog as the last estimate grouped it: its clearest photo, the walks it was seen on and
+    its ear. `checked` is true when a person decided the ear; otherwise the status is the model's."""
+
+    individual_id: uuid.UUID
+    crop: CropOut
+    passes: list[int]
+    sightings: int
+    status: Literal["notched", "not_notched", "not_visible", "unknown"]
+    checked: bool
 
 
 class EstimateOut(BaseModel):
@@ -522,3 +536,62 @@ async def list_estimates(survey_id: uuid.UUID, user: UserDep, db: DbDep) -> list
         )
     ).scalars()
     return [_estimate_out(e) for e in rows]
+
+
+@router.get("/surveys/{survey_id}/dogs", response_model=list[DogOut])
+async def dogs(survey_id: uuid.UUID, user: UserDep, db: DbDep, settings: SettingsDep) -> list[DogOut]:
+    """Team view of every dog from the latest estimate. Never public: it links photos to dogs."""
+    await _survey_for(db, user, survey_id, Role.WALKER)
+    rows = (
+        await db.execute(
+            select(SightingRow.individual_id, SightingRow.pass_no, Detection, Photo.taken_at, NotchCallRow)
+            .join(Individual, Individual.id == SightingRow.individual_id)
+            .join(Detection, Detection.id == SightingRow.detection_id)
+            .join(Photo, Photo.id == Detection.photo_id)
+            .outerjoin(NotchCallRow, NotchCallRow.detection_id == Detection.id)
+            .where(Individual.survey_id == survey_id)
+        )
+    ).all()
+    grouped: dict[uuid.UUID, list[Any]] = {}
+    for row in rows:
+        grouped.setdefault(row[0], []).append(row)
+    out: list[DogOut] = []
+    for ind_id, members in grouped.items():
+        best = max(members, key=lambda r: r[2].quality)
+        decided = [
+            r[4].decision.value
+            for r in members
+            if r[4] is not None and r[4].decision not in (None, NotchDecision.UNSURE)
+        ]
+        guessed = []
+        for r in members:
+            call = r[4]
+            if call is not None and call.p_notched is not None:
+                probs = {
+                    "notched": call.p_notched,
+                    "not_notched": call.p_not_notched or 0.0,
+                    "not_visible": call.p_not_visible or 0.0,
+                }
+                guessed.append(max(probs, key=lambda k: probs[k]))
+        classes = decided or guessed
+        status_: Literal["notched", "not_notched", "not_visible", "unknown"] = (
+            "notched"
+            if "notched" in classes
+            else "not_notched"
+            if "not_notched" in classes
+            else "not_visible"
+            if classes
+            else "unknown"
+        )
+        out.append(
+            DogOut(
+                individual_id=ind_id,
+                crop=_crop(settings, best[2], best[1], best[3]),
+                passes=sorted({r[1] for r in members}),
+                sightings=len(members),
+                status=status_,
+                checked=bool(decided),
+            )
+        )
+    out.sort(key=lambda d: (-len(d.passes), d.crop.taken_at))
+    return out

@@ -4,11 +4,13 @@
 	import { api } from '$lib/api';
 	import { recall, remember } from '$lib/cache';
 	import Icon from '$lib/components/Icon.svelte';
+	import DogGallery from '$lib/components/DogGallery.svelte';
 	import RangeBar from '$lib/components/RangeBar.svelte';
+	import ShareGauge from '$lib/components/ShareGauge.svelte';
 	import { t } from '$lib/i18n/index.svelte';
 	import { getPass, passKey } from '$lib/queue';
 	import { session } from '$lib/session.svelte';
-	import type { Estimate, Progress, Survey } from '$lib/types';
+	import type { Dog, Estimate, Progress, Survey } from '$lib/types';
 
 	const id = $derived(page.params.id ?? '');
 	let survey = $state<Survey | null>(null);
@@ -49,6 +51,7 @@
 	});
 
 	let progress = $state<Progress | null>(null);
+	let dogs = $state<Dog[] | null>(null);
 	let estimates = $state<Estimate[]>([]);
 	let notice = $state<string | null>(null);
 	let noticeIsError = $state(false);
@@ -56,9 +59,10 @@
 
 	async function loadAnalysis(sid: string) {
 		try {
-			[progress, estimates] = await Promise.all([
+			[progress, estimates, dogs] = await Promise.all([
 				api.get<Progress>(`/surveys/${sid}/progress`),
-				api.get<Estimate[]>(`/surveys/${sid}/estimates`)
+				api.get<Estimate[]>(`/surveys/${sid}/estimates`),
+				api.get<Dog[]>(`/surveys/${sid}/dogs`).catch(() => [] as Dog[])
 			]);
 		} catch {
 			/* offline: walkers do not need this panel */
@@ -218,14 +222,11 @@
 							<span class="num">{pct(r.share.median)}</span> are sterilised
 							<span class="range-text">(<span class="num">{pct(r.share.low)} to {pct(r.share.high)}</span>)</span>
 						</p>
-						<RangeBar
-							tone="notched"
+						<ShareGauge
+							share={r.share.median}
 							low={r.share.low}
-							mid={r.share.median}
 							high={r.share.high}
-							max={1}
-							format={(v) => `${Math.round(v * 100)}%`}
-							label="Sterilised share: {pct(r.share.low)} to {pct(r.share.high)}, most likely {pct(r.share.median)}"
+							label="Sterilised share {pct(r.share.median)}, range {pct(r.share.low)} to {pct(r.share.high)}, against the 70% target"
 						/>
 					{:else if r.single_pass && r.single_pass.share.share !== null}
 						<p class="headline small">
@@ -322,6 +323,10 @@
 				{/if}
 				{#if notice}<p class={noticeIsError ? 'error' : 'notice'} role="status">{notice}</p>{/if}
 			</section>
+
+			<section class="panel wide-panel">
+				<DogGallery {dogs} />
+			</section>
 		{/if}
 	</div>
 {/if}
@@ -349,6 +354,9 @@
 	@media (min-width: 1100px) {
 		.grid:not(.walker) {
 			grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+		}
+		.wide-panel {
+			grid-column: 1 / -1;
 		}
 	}
 	.empty {

@@ -7,6 +7,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import RangeBar from '$lib/components/RangeBar.svelte';
 	import RouteStrip from '$lib/components/RouteStrip.svelte';
+	import ShareGauge from '$lib/components/ShareGauge.svelte';
 	import SiteFooter from '$lib/components/SiteFooter.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import { SAMPLE_REPORT_NOTE, SAMPLE_REPORT_SLUG } from '$lib/site';
@@ -69,14 +70,11 @@
 						{#if report.headline.share}
 							<p class="big">{report.headline.share}</p>
 							{#if r.share}
-								<RangeBar
-									tone="notched"
+								<ShareGauge
+									share={r.share.median}
 									low={r.share.low}
-									mid={r.share.median}
 									high={r.share.high}
-									max={1}
-									format={pct}
-									label="Sterilised share: {pct(r.share.low)} to {pct(r.share.high)}"
+									label="Sterilised share {pct(r.share.median)}, range {pct(r.share.low)} to {pct(r.share.high)}, against the 70% target"
 								/>
 							{/if}
 						{/if}

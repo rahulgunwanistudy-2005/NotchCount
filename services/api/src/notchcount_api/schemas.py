@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime, time
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from notchcount_api.db.models import PhotoStatus, Role, SurveyStatus, View
 
@@ -43,6 +43,8 @@ class TeamCreate(BaseModel):
 class MemberCreate(BaseModel):
     display_name: str = Field(min_length=1, max_length=80)
     role: Role = Role.WALKER
+    # Optional: lets the person sign in with an emailed code (MojoAuth). Only a hash is stored.
+    email: EmailStr | None = None
 
 
 class MemberInviteOut(Out):

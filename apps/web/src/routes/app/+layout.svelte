@@ -9,7 +9,8 @@
 	import Icon, { type IconName } from '$lib/components/Icon.svelte';
 	import { hindiAvailable, locale, setLang, t } from '$lib/i18n/index.svelte';
 	import { counts, requestPersistence, sync } from '$lib/queue';
-	import { loadMe, session } from '$lib/session.svelte';
+	import EmailSignIn from '$lib/components/EmailSignIn.svelte';
+	import { loadMe, loadMethods, session } from '$lib/session.svelte';
 	import { SAMPLE_REPORT_SLUG } from '$lib/site';
 	import type { Survey } from '$lib/types';
 
@@ -22,6 +23,7 @@
 
 	onMount(() => {
 		void loadMe();
+		void loadMethods();
 		void requestPersistence();
 		void sync();
 		const onOnline = () => void sync();
@@ -152,7 +154,13 @@
 						<div>
 							<h1>{t('signin.title')}</h1>
 							<p>{t('signin.body')}</p>
-							<a class="btn peach" href="/r/{SAMPLE_REPORT_SLUG}">{t('signin.sample')}</a>
+							{#if session.emailCode}
+								<div class="otp">
+									<p class="otp-lead">Or, if your admin added your email, sign in with a code:</p>
+									<EmailSignIn ondone={() => void loadMe()} />
+								</div>
+							{/if}
+							<a class="btn quiet" href="/r/{SAMPLE_REPORT_SLUG}">{t('signin.sample')}</a>
 						</div>
 					</section>
 				{:else}
@@ -358,5 +366,15 @@
 	.signin > div {
 		flex: 1;
 		min-width: min(100%, 18rem);
+	}
+	.otp {
+		background: var(--surface-soft);
+		border-radius: var(--radius-tile);
+		padding: var(--space-4) var(--space-5);
+		margin: var(--space-4) 0;
+	}
+	.otp-lead {
+		margin: 0 0 var(--space-3);
+		font-weight: 500;
 	}
 </style>

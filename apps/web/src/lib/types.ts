@@ -198,3 +198,13 @@ export interface PublicReport {
 	computed_at: string;
 	strip: StripDogOut[];
 }
+
+/** GET /surveys/{id}/dogs: the team's view of each dog the last estimate grouped. */
+export interface Dog {
+	individual_id: string;
+	crop: CropOut;
+	passes: number[];
+	sightings: number;
+	status: 'notched' | 'not_notched' | 'not_visible' | 'unknown';
+	checked: boolean;
+}

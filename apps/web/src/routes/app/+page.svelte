@@ -2,6 +2,7 @@
 	import { onMount, untrack } from 'svelte';
 	import { api } from '$lib/api';
 	import { recall, remember } from '$lib/cache';
+	import EmailSignIn from '$lib/components/EmailSignIn.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import { t } from '$lib/i18n/index.svelte';
 	import { counts, sync } from '$lib/queue';
@@ -11,6 +12,7 @@
 	let surveys = $state<Record<string, Survey[]>>({});
 	let waiting = $state(0);
 	let syncMessage = $state<string | null>(null);
+	let emailLinked = $state(false);
 
 	async function refreshQueue() {
 		waiting = (await counts()).queued;
@@ -102,6 +104,17 @@
 			{/if}
 		</section>
 	{/each}
+	{#if session.emailCode}
+		<section class="panel email">
+			<h2>Sign in with your email next time</h2>
+			{#if emailLinked}
+				<p class="notice" role="status">Done. Next time, sign in with a code sent to that email.</p>
+			{:else}
+				<p class="hint">Add your email once and you will not need a new link from your admin. We keep only a scrambled copy of it, never the address.</p>
+				<EmailSignIn mode="link" ondone={() => (emailLinked = true)} />
+			{/if}
+		</section>
+	{/if}
 {:else if session.loaded}
 	<p class="panel">{t('home.noTeams')}</p>
 {/if}
@@ -132,6 +145,12 @@
 	.pending .hint {
 		flex-basis: 100%;
 		margin: 0;
+	}
+	.email {
+		margin-top: var(--space-4);
+	}
+	.email h2 {
+		font-size: var(--step-1);
 	}
 	.team + .team {
 		margin-top: var(--space-4);

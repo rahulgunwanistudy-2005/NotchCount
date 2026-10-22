@@ -8,6 +8,7 @@
 		mid,
 		high,
 		seen = null,
+		truth = null,
 		max,
 		format = (v: number) => String(Math.round(v)),
 		tone = 'sage',
@@ -17,6 +18,8 @@
 		mid: number;
 		high: number;
 		seen?: number | null;
+		/** A known true value (simulations only), drawn as a peach diamond. */
+		truth?: number | null;
 		max: number;
 		format?: (v: number) => string;
 		tone?: 'sage' | 'notched';
@@ -34,6 +37,9 @@
 		<line class="seen" x1={x(seen)} x2={x(seen)} y1="8" y2="32" />
 	{/if}
 	<line class="mid" x1={x(mid)} x2={x(mid)} y1="6" y2="34" />
+	{#if truth !== null}
+		<path class="truth" d="M {x(truth)} 2 l 7 9 l -7 9 l -7 -9 z" />
+	{/if}
 	<text x={x(low)} y="44" text-anchor="middle">{format(low)}</text>
 	<text x={x(high)} y="44" text-anchor="middle">{format(high)}</text>
 </svg>
@@ -67,6 +73,11 @@
 		stroke: var(--fog-text);
 		stroke-width: 1.5;
 		stroke-dasharray: 3 3;
+	}
+	.truth {
+		fill: var(--plain);
+		stroke: #fff;
+		stroke-width: 1.5;
 	}
 	text {
 		font: 500 11px var(--font-body);

@@ -13,6 +13,7 @@ from sqlalchemy import Select, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from notchcount_api.auth.invites import create_invite
+from notchcount_api.auth.mojoauth import contact_hash
 from notchcount_api.db.models import (
     PassRow,
     Photo,
@@ -89,7 +90,13 @@ async def add_member(
 ) -> MemberInviteOut:
     """Create a team member and a one-time sign-in link for them."""
     await require_role(db, user, team_id, Role.ADMIN)
-    member = User(auth_subject=f"invite:{uuid.uuid4()}", display_name=body.display_name)
+    member = User(
+        auth_subject=f"invite:{uuid.uuid4()}",
+        display_name=body.display_name,
+        phone_hash=contact_hash(settings.session_secret.get_secret_value(), str(body.email))
+        if body.email
+        else None,
+    )
     db.add(member)
     await db.flush()
     db.add(TeamMember(team_id=team_id, user_id=member.id, role=body.role))

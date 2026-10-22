@@ -92,3 +92,33 @@ Photos on the public pages are Wikimedia Commons CC BY-SA 4.0 street dogs, credi
 - **Free-tier sleep:** the service sleeps after 15 idle minutes, and queued jobs resume when the next request wakes it.
 
 **D-27 Mobbin was not used.** Its MCP needs a paid plan (checked Oct 22). Capture and review patterns come from the brief's wireframes and the team's visual reference (D-25) instead.
+
+**D-28 MojoAuth email codes beside invite links (Oct 23).** MojoAuth's API was checked against its published OpenAPI spec (`https://mojoauth.com/docs/api/mojoauthapi.yaml`, Oct 23):
+- `POST /users/emailotp` sends the code.
+- `POST /users/emailotp/verify` checks it. It takes a form with the fields `OTP` and `state_id`.
+- Both calls authenticate with the `x-api-key` header.
+
+How sign-in works:
+- When `NC_MOJOAUTH_API_KEY` is set, the sign-in screen offers "Email me a code".
+- A team admin can add a person's email, and a signed-in walker can add their own once.
+- Invite links keep working.
+- The code is sent whether or not the address is on a team, so the answer never tells anyone who is registered.
+
+How the address is stored:
+- We keep an HMAC of the lower-cased address, keyed with the session secret, never the address itself.
+- It lives in the existing `users.phone_hash` column, which was reserved for exactly this verified-contact hash, so no migration was needed.
+- **Rotating the session secret means people re-add their email.**
+
+Phone OTP uses the same API shape and can be added the same way if the plan allows SMS.
+
+**D-29 Landing page shows the method and the pipeline, not decoration (Oct 23).** The team asked for more impact. The page now carries:
+- **A street simulator.** Visitors walk a made-up lane twice and reveal the truth. `lib/sim.ts` uses the engine's exact Chapman, Chao and Wilson formulas; a unit test pins it to `notchcount_stats` on the BIBLE worked example. It is labelled as a simulation.
+- **A dark band of sourced numbers**, from BIBLE section 1, with each source linked.
+- **The real pipeline output on real photos.** `scripts/landing_assets.py` runs the production detector, blur and embedder: the dog boxes (94% and 96%), the street photo with 4 people and a bus blurred, and the 0.50 similarity between two different dogs.
+- **A strip of the crops the pipeline cut.**
+
+Two departures from the design brief:
+- A short label above the hero headline. It answers "what is this?" for a judge in one line.
+- One slow spinning ring of text, which stops under reduced motion.
+
+The team dashboard gains a gallery of every dog (`GET /surveys/{id}/dogs`, team-only) and a dial against the 70% target. In the gallery, a tile's cut corner appears only when a person confirmed the notch.

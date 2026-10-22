@@ -40,7 +40,11 @@ def _guard_schema() -> None:
 
 
 @pytest.fixture(autouse=True)
-async def clean_db() -> AsyncIterator[None]:
+async def clean_db(request: pytest.FixtureRequest) -> AsyncIterator[None]:
+    # Only database tests get a clean schema; plain unit tests in this folder never touch it.
+    if request.node.get_closest_marker("db") is None:
+        yield
+        return
     tables = ", ".join(t.name for t in reversed(Base.metadata.sorted_tables))
     async with get_engine().begin() as conn:
         await conn.execute(text(f"truncate {tables} restart identity cascade"))

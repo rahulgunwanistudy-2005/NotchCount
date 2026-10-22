@@ -18,6 +18,7 @@
 
 	let newName = $state('');
 	let newRole = $state<Role>('walker');
+	let newEmail = $state('');
 	let routeName = $state('');
 	let corridor = $state(40);
 	let points = $state<[number, number][]>([]);
@@ -55,8 +56,13 @@
 
 	const addMember = () =>
 		run(async () => {
-			lastInvite = await api.post<MemberInvite>(`/teams/${teamId}/members`, { display_name: newName.trim(), role: newRole });
+			lastInvite = await api.post<MemberInvite>(`/teams/${teamId}/members`, {
+				display_name: newName.trim(),
+				role: newRole,
+				email: newEmail.trim() || null
+			});
 			newName = '';
+			newEmail = '';
 			copied = false;
 			await load();
 		});
@@ -136,6 +142,13 @@
 				<input id="member-name" bind:value={newName} required maxlength="80" autocomplete="off" />
 				<span class="hint">First name only. We do not store phone numbers here.</span>
 			</div>
+			{#if session.emailCode}
+				<div class="field">
+					<label for="member-email">Email (optional)</label>
+					<input id="member-email" type="email" bind:value={newEmail} autocomplete="off" />
+					<span class="hint">Lets them sign in with an emailed code instead of a link. Only a scrambled copy is kept.</span>
+				</div>
+			{/if}
 			<div class="field">
 				<label for="member-role">Role</label>
 				<select id="member-role" bind:value={newRole}>
