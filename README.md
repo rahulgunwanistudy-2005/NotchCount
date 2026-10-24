@@ -4,7 +4,7 @@ Two walks down a street become a statistically valid audit of street-dog sterili
 
 India's Animal Birth Control programme catches, sterilises, vaccinates and ear-notches street dogs, then returns them. Whether it works depends on coverage, and nobody outside the operator measures coverage. With NotchCount, residents photograph every free-roaming dog on a fixed route on two mornings. The app recognises the same dog across both walks, checks each ear for the notch a vet cuts at sterilisation, and estimates how many dogs use the route and what share are sterilised, with honest ranges. It then files a one-page evidence report with the official responsible. A team member approves every email before it is sent.
 
-**Our route:** _[filled in by the team from the final report: dates, route length, estimate with range, sterilised share with range]._ Live app: https://notchcount.onrender.com (interim host, see [DECISIONS D-04](docs/DECISIONS.md)).
+**Our route:** _[filled in by the team from the final report: dates, route length, estimate with range, sterilised share with range]._ Live app: https://notchcount.deployxa.online (backup: https://notchcount.onrender.com; see [DECISIONS D-30](docs/DECISIONS.md)).
 
 ## Screens
 
@@ -82,7 +82,7 @@ More in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 - **Agentboxd**: one inbox per case (`client_id = case-<id>`). Drafts are created with a draft-only key. Only the Approve button (team admin) sends, with the content hash pinned. Replies arrive by signed webhook, from whichever of the received, screened or released events first carries the text, and are stored as untrusted text; flagged ones are held. No model reads them. The admin System health page checks both keys live.
 - **MojoAuth**: sign-in by emailed one-time code, beside the one-time invite links ([D-28](docs/DECISIONS.md)). A team admin adds a person's email, or a signed-in walker adds their own. Only a keyed hash of the address is stored. Phone codes use the same API shape.
-- **Deployxa**: hosts the app, deployed from this repository's Dockerfile on every push to `main`. Render runs the same image as a backup, on the same database. The web service also runs the job worker ([D-26](docs/DECISIONS.md)), so photos are processed without the team laptop; the laptop worker is faster and can run alongside.
+- **Deployxa**: hosts the app at https://notchcount.deployxa.online, built from this repository's Dockerfile. Render runs the same image as a backup, on the same database. The web service also runs the job worker ([D-26](docs/DECISIONS.md)), so photos are processed without the team laptop; the laptop worker is faster and can run alongside.
 - Backboard, Spine and Momen are not used: none of them does a job this product needs, and adding them for show would make the system harder to explain and audit.
 
 ## Limitations

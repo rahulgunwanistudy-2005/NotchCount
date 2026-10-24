@@ -16,6 +16,7 @@ Every external dependency checked against its own docs, with the date. Every dev
 | 2026-10-20 | MapLibre GL | npm `maplibre-gl` 6.15.0, BSD-3-Clause | v6 needs `setWorkerUrl()`; the worker is bundled through Vite's `?url` import. |
 | 2026-10-21 | Agentboxd API | agentboxd.com/docs/api, /docs/drafts, /docs/webhooks | `Authorization: Bearer`. `POST /v1/inboxes` (idempotent on `client_id`), `POST /v1/inboxes/:id/drafts`, `POST /v1/inboxes/:id/drafts/:draftId/send` (with `Idempotency-Key` and `expected_content_sha256`, so the approved content is exactly what was reviewed; 409 `draft_changed` otherwise). Attachments are `{filename, content_type, content_base64}`. Key permissions: draft-only key = `drafts:read` + `drafts:write`; send key adds `messages:send`. Webhooks: `X-Mailroom-Timestamp` + `X-Mailroom-Signature` = hex HMAC-SHA256(secret, "<ts>.<raw body>"), reject skew over 300 s. Event `message.received` carries `thread_id`, `message.extracted_text`, `labels`. Exact names of the injection and DMARC labels are not on these pages; treat any label we do not recognise as held. |
 | 2026-10-20 | Render (interim host) | Connected Render account; free web service in Singapore | 512 MB, sleeps when idle. Used tonight because Deployxa needs the team's account (see D-04). |
+| 2026-10-24 | Deployxa API | deployxa.com/llms.txt, /openapi.json, /docs/mcp-server, /docs/cli, /docs/env-vars; live calls with the team's key | The REST paths in `openapi.json` answer 404. The working interface is the hosted MCP endpoint `https://mcp.deployxa.com/mcp` (Streamable HTTP) with `Authorization: Bearer dxa_...`. Key scopes: projects, deployments, domains read/write, billing read. Free plan: 3 projects, 0.5 CPU, 512 MB, 100 build minutes. Env changes need a redeploy. |
 
 ## Decisions
 
@@ -110,6 +111,8 @@ How the address is stored:
 - **Rotating the session secret means people re-add their email.**
 
 Phone OTP uses the same API shape and can be added the same way if the plan allows SMS.
+
+**D-30 Deployxa is the primary host; Render stays as backup (Oct 24).** The team's Deployxa account had no project, so none had ever deployed. Project `notchcount` was created through Deployxa's MCP endpoint from this repo's root Dockerfile on the free plan, with the same database and environment as Render, plus `NC_PUBLIC_BASE_URL=https://notchcount.deployxa.online`. `scripts/live_check.py` passes on both hosts: public pages, the report PDF, admin health, and MojoAuth and both Agentboxd keys accepted. Both hosts share one database, so sign-in links work on either.
 
 **D-29 Landing page shows the method and the pipeline, not decoration (Oct 23).** The team asked for more impact. The page now carries:
 - **A street simulator.** Visitors walk a made-up lane twice and reveal the truth. `lib/sim.ts` uses the engine's exact Chapman, Chao and Wilson formulas; a unit test pins it to `notchcount_stats` on the BIBLE worked example. It is labelled as a simulation.
