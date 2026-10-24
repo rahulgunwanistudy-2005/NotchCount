@@ -19,3 +19,6 @@ data/
 .DS_Store
 .claude/
 private/
+
+# Zipped copy of docs/project-images (duplicate, 20 MB)
+docs/NotchCount-project-images.zip

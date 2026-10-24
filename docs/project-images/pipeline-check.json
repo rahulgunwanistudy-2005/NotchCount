@@ -1,0 +1,13 @@
+{
+  "dog_count": 1,
+  "dog_detection_confidence": 0.9362814426422119,
+  "embedding_dimensions": 384,
+  "quality": 1.0,
+  "usable": true,
+  "persons_blurred": 4,
+  "vehicles_blurred": 1,
+  "unredacted_person_regions_after_check": 0,
+  "processed_photo_exif_fields": 0,
+  "model_version": "detector@640+dinov2_vits14_int8@224",
+  "source": "Repository fixture images, real local ONNX inference. Not field-study validation."
+}

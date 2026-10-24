@@ -1,0 +1,8 @@
+{
+  "api": "mocked, no production writes",
+  "camera": "Chromium synthetic test signal",
+  "queuedOffline": 3,
+  "uploadedAfterReconnect": 3,
+  "uiDogCount": 2,
+  "note": "Three shots alternate side / head / side, so the UI counts two dogs."
+}

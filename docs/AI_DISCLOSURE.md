@@ -22,6 +22,9 @@ Neighborhood Hacks allows AI assistants and requires disclosure. This file is ke
 - The Oct 23 landing and dashboard work: the street simulator (`lib/sim.ts`, `StreetSim.svelte`), the pipeline pictures script (`scripts/landing_assets.py`), the dog gallery endpoint and screen, the share dial, and MojoAuth email sign-in (D-28, D-29). The team asked for more visual impact; the AI designed and wrote these.
 - Interface tests with a mocked API (`apps/web/ui/`), the in-process worker setting (D-26), the re-ID benchmark notebook (`benchmarks/reid_kaggle/`) and the demo seed script (`scripts/demo_seed.py`).
 
+- Oct 24, outside the main Claude Code session: the project image pack (`docs/project-images/`, made by `scripts/export_project_images.py` and `scripts/capture_project_images.mjs` from the saved screenshots and the real pipeline on repository fixtures) and the thumbnail `docs/notchcount-thumbnail-3x2.png`, made with an AI image generation tool from the prompt in `docs/notchcount-thumbnail-prompt.txt`. The pack's own README labels which images are demo, mocked or synthetic.
+- Oct 24, Claude Code: Deployxa project creation and deployment through Deployxa's MCP endpoint (D-30), host keys and webhook secret on both hosts, and the Devpost draft text (kept out of the repo).
+
 ## What the team did
 
 The students wrote the build pack this work follows (the spec in `docs/BIBLE.md`, the design brief, the field protocol and the submission kit). They chose the problem and the method. They make the decisions marked HUMAN and collect all field data and labels.
